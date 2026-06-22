@@ -36,9 +36,9 @@
 
 ## Phase 3: Sync Sharing Material
 
-- [ ] Update ai-native-pm-sharing-draft.md chapter 11 with actual repo name and structure.
-- [ ] Update ai-native-pm-sharing-draft.md slides outline for toolkit pages.
-- [ ] Update ai-native-pm-sharing.html toolkit / Hackathon / 7-day challenge pages.
+- [x] Update ai-native-pm-sharing-draft.md chapter 11 with actual repo name and structure.
+- [x] Update ai-native-pm-sharing-draft.md slides outline for toolkit pages.
+- [x] Update ai-native-pm-sharing.html toolkit / Hackathon / 7-day challenge pages.
 
 ## Phase 4: Validation
 
