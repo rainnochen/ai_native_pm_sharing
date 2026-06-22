@@ -39,8 +39,8 @@ status: 45 分钟授课版 v0.1
 | 3 | Non-Consensus | 重点讲 | 1:30 | AI 共识会快速变化，组织要敏捷 |
 | 4 | Course Map | 快过 | 1:00 | 三段：认知、工作台、Builder |
 | 5 | AI Native Organization | 重点讲 | 2:00 | AI 原生组织不是工具采购，而是默认生产力系统 |
-| 6 | Yu Jun Lens | 重点讲 | 2:00 | 借俞军方法论，把 PM 从写需求拉回价值交换 |
-| 7 | PM Definition Shift | 重点讲 | 2:00 | AI 时代 PM 从产品交易设计者，升级为人机协作系统 Owner |
+| 6 | Yu Jun Lens | 重点讲 | 2:00 | 从 P&G 品牌经理、软件 PM、移动互联网 PM，讲到 AI 时代 Builder PM |
+| 7 | PM Definition Shift | 重点讲 | 2:00 | 不变的是用户价值判断，变化的是 PM 要设计人机协作系统 |
 | 8 | Software Development Shift | 快过 | 1:00 | 从需求链变成意图、上下文、工具、评估、Human Gate |
 | 9 | LLM Basics | 重点讲 | 1:30 | 大模型擅长补全，所以会猜 |
 | 10 | Interaction Demo | 演示 | 1:30 | 不要先要答案，先让模型问问题 |
