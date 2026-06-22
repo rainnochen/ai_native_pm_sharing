@@ -27,6 +27,8 @@ AI changes PM work from document production to system design. In an AI-native or
 - **Loop Engineering** makes signals, decisions, actions, and feedback improve over time.
 - **Builder ability** lets PMs turn ideas into runnable evidence instead of only slides.
 
+For the current live course pacing, use [`45min-course-structure.md`](45min-course-structure.md).
+
 The PM remains responsible for the problem, evidence, decision, and result.
 
 ## Who This Is For

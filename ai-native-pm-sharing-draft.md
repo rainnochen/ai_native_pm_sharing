@@ -2646,20 +2646,22 @@ Prompt → Skill → Workflow → Harness → Loop → Builder
 这段演示的重点不是工具速度，而是让听众看到：**一个 Prompt 如何升级成 Skill，一个 Skill 如何进入 Harness，一个 Demo 如何进入 Loop。**
 
 ---
-# 16. 分享 Slides 初步结构（36 页展示版 / 40 页备稿版）
+# 16. 分享 Slides 初步结构（37 页展示版 / 45 分钟授课版）
 
-> 这部分只是从本文抽取的演讲骨架，不是最终逐字稿。当前 HTML 展示版为 **36 页 / 60 分钟**：投屏内容少，重点靠口播强调观点、非共识、现场演示和个人判断；下面的 40 页结构作为扩展备稿和后续 Slidev 版本参考。
+> 这部分只是从本文抽取的演讲骨架，不是最终逐字稿。当前 HTML 展示版为 **37 页 / 45 分钟**：投屏内容保持克制，重点靠口播强调观点、非共识、现场演示和个人判断；完整节奏见 `45min-course-structure.md`，长版备稿见 `60min-talk-structure.md`。
 
 ## 时间分配
 
 | 部分 | 页码 | 建议时间 |
 |---|---:|---:|
-| Part 1：AI 原生组织下 PM 要怎么做 | 1–27 | 35 分钟 |
-| Part 2：实践，用 GitHub 仓库搭 PM 工作台 | 28–29 | 10 分钟 |
-| Part 3：成为 Builder 与 Hackathon 训练场 | 30–34 | 10 分钟 |
-| 行动清单与 Closing | 35–36 | 5 分钟 |
+| 开场：为什么现在必须学 AI | 1–4 | 5 分钟 |
+| Part 1：AI 原生组织下 PM 要怎么做 | 5–14 | 13 分钟 |
+| Part 2：案例与非共识 | 15–18 | 6 分钟 |
+| Part 3：Prompt / Harness / Loop | 19–28 | 12 分钟 |
+| Part 4：GitHub Workbench 实操 | 29–30 | 5 分钟 |
+| Part 5：Builder / Hackathon / 行动 | 31–37 | 4 分钟 |
 
-## 当前 36 页 HTML 展示版
+## 当前 37 页 HTML 展示版
 
 | 页码 | 标题 | 核心讲法 |
 |---:|---|---|
@@ -2668,37 +2670,38 @@ Prompt → Skill → Workflow → Harness → Loop → Builder
 | 3 | 今天的内容可能很快过期 | 共识会变，所以组织和个人要更敏捷 |
 | 4 | 今天分三段 | 先建立认知，再手把手搭工作台，最后进入 Builder/Hackathon |
 | 5 | 什么是 AI 原生组织 | 不是用了 AI 工具，而是把 AI 作为默认生产力、协作对象、执行系统 |
-| 6 | PM 的定义如何变化 | 从理解用户与设计交易，升级为设计人机工具数据反馈协作系统 |
-| 7 | 传统软件开发 vs AI 原生软件开发 | 从需求-研发-测试，变成意图-上下文-工具-评估-Human Gate-Loop |
-| 8 | 大模型为什么会“猜” | 模型不是数据库；它会基于上下文预测和补全 |
-| 9 | 互动 Demo：先问我，再回答 | 让模型先问问题、暴露假设、列缺口 |
-| 10 | PM 工作台：从 Prompt 到 Harness | Prompt 是对话，Harness 是工作台 |
-| 11 | AI 对 PM 的影响：不是提效，是重构 | PRD 写得快不是终点，信息、判断、执行、反馈的连接方式变了才是本质 |
-| 12 | 2023-2026：从聊天框到工作系统 | 行业焦点从生成能力迁移到 Agent、Skills、Harness、Loop |
-| 13 | AI Native 工作系统四层 | PM 最容易停在模型层，价值在 Harness、Loop 和治理层 |
-| 14 | 市场信号：从 Copilot 到工作环境 | 公开实践正在从个人助手走向组织工作环境 |
-| 15 | 大厂案例总览 | 公开实践共同指向组织级 Context、Skills、连接器和评估 |
-| 16 | 坏指标：不能只看 AI 生成量 | 生成占比不等于端到端交付效率 |
-| 17 | 美团：复杂度不会自动收敛 | 人类共识要变成机器可执行规则与验证 |
-| 18 | 主线：Prompt → Harness → Loop | 一次回答、可靠任务、持续进化 |
-| 19 | Prompt：把一次问题问清楚 | 好 Prompt 的本质是好任务定义 |
-| 20 | 为什么“会写 Prompt”已经不够 | 没有状态、工具、权限、验收和反馈，Prompt 只能优化一次输出 |
-| 21 | Harness：给 AI 一套工作环境 | 不是 Prompt 库，而是上下文、Skills、工具、状态、规则、Eval |
-| 22 | Loop：让反馈闭环跑起来 | 受控重复，并在每轮获得新证据 |
-| 23 | 什么时候不要做 Loop | Loop 不是免费的，重复、可验证、可复现、有人 review 才值得自动化 |
-| 24 | 控制论：目标、反馈、调节 | PM 对决策负责，必须设计反馈和纠偏 |
-| 25 | 信号论：信息接收与验证系统 | 壁垒不是拥有更多信息，而是识别、验证和使用信号 |
-| 26 | Loop Contract：先写合同，再自动化 | 触发、目标、范围、工具、验证、停止、升级、状态写回 |
-| 27 | 一个需求分析 Loop | 信号进入、AI 处理、PM 判断、验证、记录、更新 |
-| 28 | GitHub Toolkit：可复制的 PM Workbench | 每个 PM 都可以复制自己的 Context、Skills、Loops、Builder Starters |
-| 29 | GitHub Workbench Demo：仓库怎么用 | Fork/Clone、填 Context、如流 CLI 导入合规知识、commit、跑 Skill/Loop |
-| 30 | 为什么 PM 必须成为 Builder | 当 Demo 成本下降，PM 不能只做需求传递者 |
-| 31 | 代码便宜后，取舍变贵 | AI 会放大功能欲望，PM 要守住场景边界和信任债务 |
-| 32 | AI-Native PM 五阶段 | 从 AI User 到 Builder & Loop Owner |
-| 33 | Hackathon：从表达者到创造者 | 36 小时把 PM 推到对可运行结果负责的位置 |
-| 34 | Hackathon Workbench：内部比赛怎么用 | 用 Hackathon Kit 组织 Problem、Demo Spine、Repo、Eval、Decision Log 和 Backup |
-| 35 | 7 天 PM 自进化挑战 | 先跑一条小而真实的闭环 |
-| 36 | Closing：PM 对决策负责 | 不要只使用 AI，开始设计共同进化的系统 |
+| 6 | 俞军视角：成熟 PM 是设计价值交换的人 | 用用户价值、交易和替换成本解释成熟 PM 的底层任务 |
+| 7 | PM 到 AI 时代发生了什么变化 | 旧能力没有失效，但多了人机协作系统的设计责任 |
+| 8 | 传统软件开发 vs AI 原生软件开发 | 从需求-研发-测试，变成意图-上下文-工具-评估-Human Gate-Loop |
+| 9 | 大模型为什么会“猜” | 模型不是数据库；它会基于上下文预测和补全 |
+| 10 | 互动 Demo：先问我，再回答 | 让模型先问问题、暴露假设、列缺口 |
+| 11 | PM 工作台：从 Prompt 到 Harness | Prompt 是对话，Harness 是工作台 |
+| 12 | AI 对 PM 的影响：不是提效，是重构 | PRD 写得快不是终点，信息、判断、执行、反馈的连接方式变了才是本质 |
+| 13 | 2023-2026：从聊天框到工作系统 | 行业焦点从生成能力迁移到 Agent、Skills、Harness、Loop |
+| 14 | AI Native 工作系统四层 | PM 最容易停在模型层，价值在 Harness、Loop 和治理层 |
+| 15 | 市场信号：从 Copilot 到工作环境 | 只会转述需求的 PM 会被重新定价 |
+| 16 | 大厂案例总览 | 公开实践共同指向组织级 Context、Skills、连接器和评估 |
+| 17 | 坏指标：不能只看 AI 生成量 | 生成占比不等于端到端交付效率 |
+| 18 | 美团：复杂度不会自动收敛 | 人类共识要变成机器可执行规则与验证 |
+| 19 | 主线：Prompt → Harness → Loop | 一次回答、可靠任务、持续进化 |
+| 20 | Prompt：把一次问题问清楚 | 好 Prompt 的本质是好任务定义 |
+| 21 | 为什么“会写 Prompt”已经不够 | 没有状态、工具、权限、验收和反馈，Prompt 只能优化一次输出 |
+| 22 | Harness：给 AI 一套工作环境 | 不是 Prompt 库，而是上下文、Skills、工具、状态、规则、Eval |
+| 23 | Loop：让反馈闭环跑起来 | 受控重复，并在每轮获得新证据 |
+| 24 | 什么时候不要做 Loop | Loop 不是免费的，重复、可验证、可复现、有人 review 才值得自动化 |
+| 25 | 控制论：目标、反馈、调节 | PM 对决策负责，必须设计反馈和纠偏 |
+| 26 | 信号论：信息接收与验证系统 | 壁垒不是拥有更多信息，而是识别、验证和使用信号 |
+| 27 | Loop Contract：先写合同，再自动化 | 触发、目标、范围、工具、验证、停止、升级、状态写回 |
+| 28 | 一个需求分析 Loop | 信号进入、AI 处理、PM 判断、验证、记录、更新 |
+| 29 | GitHub Toolkit：可复制的 PM Workbench | 每个 PM 都可以复制自己的 Context、Skills、Loops、Builder Starters |
+| 30 | GitHub Workbench Demo：仓库怎么用 | Fork/Clone、填 Context、如流 CLI 导入合规知识、commit、跑 Skill/Loop |
+| 31 | 为什么 PM 必须成为 Builder | 当 Demo 成本下降，PM 不能只做需求传递者 |
+| 32 | 代码便宜后，取舍变贵 | AI 会放大功能欲望，PM 要守住场景边界和信任债务 |
+| 33 | AI-Native PM 五阶段 | 从 AI User 到 Builder & Loop Owner |
+| 34 | Hackathon：从表达者到创造者 | 36 小时把 PM 推到对可运行结果负责的位置 |
+| 35 | Hackathon Workbench：内部比赛怎么用 | 用 Hackathon Kit 组织 Problem、Demo Spine、Repo、Eval、Decision Log 和 Backup |
+| 36 | 7 天 PM 自进化挑战 | 先跑一条小而真实的闭环 |
+| 37 | Closing：三二维码与反馈入口 | 签到、交流、评价，形成课程反馈闭环 |
 
 ## 40 页扩展备稿大纲
 
