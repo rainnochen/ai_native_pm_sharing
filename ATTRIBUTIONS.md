@@ -15,6 +15,8 @@ This project references public ideas, frameworks, and open-source projects. Do n
 | deanpeters/product-manager-prompts | https://github.com/deanpeters/product-manager-prompts | Check repository license before reuse | PM prompt reference | Link and summarize only unless license permits reuse |
 | product-on-purpose/pm-skills | https://github.com/product-on-purpose/pm-skills | Check repository license before reuse | PM skill structure reference | Link and summarize only unless license permits reuse |
 | 俞军产品方法论 | Published book | Book copyright applies | Conceptual reference for user value / transaction framing | Paraphrase only; no long quotation |
+| User-provided Chinese Loop Engineering articles | Pasted text attachments in this Codex thread | Copyright belongs to original authors/publishers | Inspiration for loop readiness checks, five components, loop contract, and production boundaries | Paraphrase into original framework; do not copy long passages or unverified viral metrics |
+| User-provided Builder article about cheap code and expensive judgment | Pasted text attachment in this Codex thread | Copyright belongs to original author/publisher | Inspiration for Builder PM judgment, trust debt, and scope discipline | Paraphrase only; use as anecdotal inspiration, not factual source |
 
 ## Add New Source
 

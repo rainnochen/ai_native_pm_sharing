@@ -919,6 +919,18 @@
       </section>
 
       <section class="slide">
+        <div class="eyebrow">Should You Loop?</div>
+        <p class="statement small">Loop 不是免费的。<br>先判断它 <span class="accent">值不值得跑</span>。</p>
+        <div class="big-list">
+          <div class="item"><span class="bullet">1</span><span>任务是否重复出现？</span></div>
+          <div class="item"><span class="bullet">2</span><span>结果能否被机器或规则验收？</span></div>
+          <div class="item"><span class="bullet">3</span><span>预算、日志、复现和 review 是否到位？</span></div>
+        </div>
+        <div class="footer"><span>一次性任务：好 Prompt 更便宜 · 无验收任务：先别 Loop</span><span class="number"></span></div>
+        <aside class="notes">吸收 Loop 实操文章里的提醒：Loop 会烧 token、会产生调试成本，也会放大错误。重复、可验证、可复现、有人 review，才值得自动循环。</aside>
+      </section>
+
+      <section class="slide">
         <div class="eyebrow">Cybernetics</div>
         <h2>控制论视角：<br>目标、反馈、调节</h2>
         <div class="diagram">
@@ -943,6 +955,18 @@
       </section>
 
       <section class="slide">
+        <div class="eyebrow">Loop Contract</div>
+        <h2>不要先做系统。<br>先写一份 Loop 合同。</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">目标</div><div class="big">完成标准<br>反指标<br>边界条件</div></div>
+          <div class="mini-card"><div class="label">运行</div><div class="big">触发<br>工具<br>状态写回</div></div>
+          <div class="mini-card"><div class="label">治理</div><div class="big">验证<br>停止<br>升级给人</div></div>
+        </div>
+        <div class="footer"><span>目标清晰、资源充足、反馈及时：管 Agent 和管团队很像</span><span class="number"></span></div>
+        <aside class="notes">这里把管理学和控制论接起来。Loop 的核心不是“自动多跑几轮”，而是把模糊意图翻译成可验证目标、不可越界的约束、失败降级和人工接手协议。</aside>
+      </section>
+
+      <section class="slide">
         <div class="eyebrow">PM Loop</div>
         <h2>一个需求分析 Loop</h2>
         <div class="loop">
@@ -964,6 +988,18 @@
         <p class="subtitle">Builder 不是改行写代码，而是把模糊判断压缩成可点击、可调用、可测试的证据。</p>
         <div class="footer"><span>可运行原型 > 更漂亮的 PPT</span><span class="number"></span></div>
         <aside class="notes">这页要讲“PM 必须成为 Builder”的边界：不是替代研发，而是提高问题定义和验证能力。</aside>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Code Is Cheap</div>
+        <p class="statement small">当代码越来越便宜，<br><span class="accent">取舍</span> 会越来越贵。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">AI 会放大</div><div class="big">功能欲望</div></div>
+          <div class="mini-card"><div class="label">PM 要守住</div><div class="big">场景边界</div></div>
+          <div class="mini-card"><div class="label">真正昂贵</div><div class="big">信任债务</div></div>
+        </div>
+        <div class="footer"><span>能做，不代表值得做；技术方案可行，不代表产品上成立</span><span class="number"></span></div>
+        <aside class="notes">借鉴 Design.md Token Exporter 的故事：AI 很容易建议加预览、加自动扫描、加复杂能力，但权限、隐私、审查、用户信任和核心场景会变贵。PM 的价值在于决定不做什么。</aside>
       </section>
 
       <section class="slide">
@@ -1034,7 +1070,7 @@
 
   <div class="controls" aria-label="presentation controls">
     <button id="prev" type="button">←</button>
-    <span id="counter">1 / 30</span>
+    <span id="counter">1 / 33</span>
     <button id="next" type="button">→</button>
     <button id="toggleNotes" type="button">备注</button>
     <span>Space 翻页 · F 全屏 · N 备注</span>

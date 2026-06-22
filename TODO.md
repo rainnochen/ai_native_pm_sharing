@@ -61,6 +61,10 @@
 
 ## Phase 6: Next Course Iterations
 
+- [x] Integrate user-provided Loop Engineering articles into course storyline.
+- [x] Add Loop readiness checks: repeated task, verifiable outcome, reproducible evidence, budget, human review.
+- [x] Add `loops/loop-contract.md` for trigger, objective, scope, tools, verification, stop rules, escalation, state, and cleanup.
+- [x] Add Builder idea: when code gets cheaper, product judgment, scope discipline, trust, and verification get more expensive.
 - [ ] Add a filled sample project for the Ask Before Answer prompt.
 - [ ] Add QR code / GitHub Pages URL to HTML slides.
 - [ ] Add visual diagram for traditional software vs AI-native software development.

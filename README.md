@@ -44,6 +44,7 @@ The PM remains responsible for the problem, evidence, decision, and result.
 4. Run one skill from [`skills/`](skills/README.md).
 5. Use [`prompts/ask-before-answer.md`](prompts/ask-before-answer.md) when facts are missing.
 6. Use [`loops/pm-loop-canvas.md`](loops/pm-loop-canvas.md) to define the next feedback cycle.
+7. Use [`loops/loop-contract.md`](loops/loop-contract.md) before turning the cycle into automation.
 
 ## Repository Structure
 
