@@ -47,3 +47,14 @@
 - [x] package.json scripts
 - [x] Run validation and link checks.
 - [x] Initialize local git repository and configure origin.
+
+## Phase 5: Deep Course Development Loop
+
+- [x] Define `loops/course-development-loop.md`.
+- [x] Define `prompts/course-development-loop-prompt.md`.
+- [ ] Add course section: What is AI Native Organization.
+- [ ] Add course section: PM definition shift from traditional PM to AI-native PM.
+- [ ] Add course section: LLM basics for non-technical PMs.
+- [ ] Add demo: ask the model to ask questions before answering.
+- [ ] Add Baidu internal PM Harness section with safe placeholders for Comate / 度 Cici / 度度.
+- [ ] Research and integrate open PM Skills references into toolkit attribution and roadmap.
