@@ -1,0 +1,11 @@
+{
+  "name": "ai-native-pm-sharing",
+  "version": "0.1.0",
+  "private": false,
+  "type": "module",
+  "scripts": {
+    "validate": "node scripts/validate-kit.js",
+    "check:links": "node scripts/check-links.js",
+    "check:html": "node -e \"const fs=require('node:fs'); const s=fs.readFileSync('ai-native-pm-sharing.html','utf8'); const slides=(s.match(/<section class=\\\\\\\"slide/g)||[]).length; if(slides<20) throw new Error('Expected at least 20 slides'); console.log('html slides:', slides);\""
+  }
+}

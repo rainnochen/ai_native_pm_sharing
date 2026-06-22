@@ -1,0 +1,2757 @@
+---
+title: AI 原生组织下的 PM 自进化实践
+author: 陈布雨
+event: 百度地图「征图学苑 Map Pro 培训」
+date: 2026-06-23 17:00–18:00
+research_snapshot: 2026-06-20
+status: 研究版 Markdown 底稿 v0.9
+---
+
+# AI 原生组织下的 PM 自进化实践
+
+> 本次分享结合 AI Agent 与地图产品实践，探索 PM 进化路径，重新理解能力边界与独特价值，构建属于自己的 AI Harness 工作系统，从“使用 AI”走向“与 AI 协同工作”。
+
+## 阅读说明
+
+1. 本文是一份**分享底稿**，不是最终逐字稿，也不是 Slides。重点是先把观点、证据、框架、案例和可执行工具沉淀完整。
+2. 研究以截至 **2026 年 6 月 20 日**可检索到的公开资料为依据。工具能力、GitHub Stars、产品定价和可用地区会持续变化，正式分享前应再次核验。
+3. “Loop Engineering”是 2026 年快速升温、但尚未形成统一行业标准的概念。本文给出的是基于近期一手文章、Agent 工程实践和产品闭环方法论的**工作定义**，不把它包装成已经定型的学术范式。
+4. 百度内部数据、项目细节和“小度想想”相关案例需在公开分享前完成合规与保密审查。文中用 `[请补充真实经历]` 标注了需要分享人亲自补充的部分。
+5. SuperAI NEXT Hackathon 与 MemoryCare 的个人经历仅使用用户已提供的信息，不虚构项目功能、名次或评委反馈。
+
+---
+
+# 0. Executive Summary
+
+过去三年，PM 使用 AI 的方式已经经历了三次迁移：最初是让模型帮忙写一段文字，随后是让 Agent 调用工具完成一项任务，现在则开始进入让一套人机系统持续发现问题、执行任务、验证结果并更新自身的阶段。真正的变化不是“PRD 写得更快”，而是 PM 工作的最小单元从“文档”变成了“可运行的闭环”。
+
+这场分享的核心判断是：**AI 对 PM 的影响，不是让 PM 更快地产出旧世界的交付物，而是迫使 PM 重新设计自己的工作系统。**当信息检索、文本生成、原型编码、数据分析和流程执行都可以部分委派给模型，PM 的价值不再主要来自“亲手完成多少内容”，而来自五件事：定义值得解决的问题，提供正确上下文，设计可靠的执行环境，建立可验证的反馈回路，并对最终取舍承担责任。
+
+为讲清这一变化，本文提出一条主线：**Prompt Engineering → Harness Engineering → Loop Engineering**。Prompt Engineering 优化一次交互，让模型更准确地理解任务；Harness Engineering 把知识、规则、Skills、工具、权限、状态、工作流和评估机制组织成一个可靠的执行环境；Loop Engineering 则进一步设计触发、行动、观察、评估、纠偏、记忆、停止和升级机制，让系统不是“跑一次”，而是能在边界内持续运行和改进。可以把三者概括为：**Prompt 决定一次回答；Harness 决定一次任务能否可靠完成；Loop 决定一套能力能否持续运行并越跑越好。**
+
+对 PM 而言，这对应一条五阶段进化路径：从 AI User 到 AI Operator，再到 AI Orchestrator、AI System Designer，最终成为 AI Builder & Loop Owner。第一阶段会用工具，第二阶段会拆解和委派任务，第三阶段会编排多工具工作流，第四阶段会把业务知识、Skills、权限和评估机制系统化，第五阶段则能够做出可运行原型，并让产品、数据和用户反馈形成持续闭环。顶级 PM 不一定成为全栈工程师，但必须具备足够的 Builder 能力，能够把模糊判断压缩成可点击、可调用、可测试的产品证据。
+
+中国互联网公司的公开实践也显示，领先团队正在从“代码补全率”转向“人机协作系统”。百度 Comate、腾讯 CodeBuddy/WorkBuddy、阿里通义灵码、飞书 Aily、美团 AI Coding 等案例的共同点，不是模型更会生成内容，而是团队开始建设组织级规则、Skills、上下文、流程、评测和治理机制。美团公开案例尤其提醒我们：AI 生成更多代码并不会自动让系统复杂度收敛；共识必须被转化为机器可执行的约束，并通过测试和评估形成闭环。对 PM 同样如此：没有判断标准和反馈机制的自动化，只会更快地产生不确定性。
+
+因此，本次分享不做“AI 工具大全”，而是帮助 PM 完成三个转变：从“拿 AI 做任务”转向“为 AI 设计工作环境”，从“交付文档”转向“交付可验证原型”，从“一次性产出”转向“经营反馈闭环”。Hackathon 是这三种能力的高密度训练场：时间短、资源少、结果必须能演示，迫使 PM 在定义问题、压缩范围、搭建 Demo、验证价值和讲清故事之间做真实取舍。
+
+最终建议发布一个开源仓库 **`ai-native-pm-kit`**：它不是 Prompt 合集，而是面向 PM 的 Harness 与 Loop Starter Kit，包含业务上下文模板、可复用 Skills、工作流、评估表、原型脚手架、Hackathon 工具包和 Slidev 分享模板。目标不是让每个人复制一套固定流程，而是让非技术 PM 在十分钟内启动第一个“人工可控的 AI 闭环”，再基于自己的业务持续迭代。
+
+整场分享希望留下的一句话是：
+
+> **不要只问 AI 能替你做什么；开始设计一套能与你共同发现、执行、验证并进化的工作系统。**
+
+---
+
+# 1. 开场：为什么今天 PM 必须重新定义自己
+
+## 1.1 三个场景，代表三种 PM
+
+### 场景一：文档型 PM
+
+过去，一个典型 PM 的一天可能由这些动作组成：搜索资料、开会、整理需求、写 PRD、画流程、跟进研发、拉数据、做复盘、写汇报。AI 最早进入这个工作流时，我们自然把它当成“更快的文档助手”：让它润色一段话、补一个表格、写一版竞品分析。
+
+这确实节省时间，但没有改变 PM 的工作系统。输入、判断、协作、验收和反馈仍然主要靠人手工连接，AI 只是被插在其中一个节点上。
+
+### 场景二：Agent 产品中的 PM
+
+当你开始做 AI Agent、地图智能服务或 App Agent × OS Agent 时，问题会发生变化。用户不再只是点击一个页面，而是表达一个意图：
+
+- “帮我安排今晚适合带父母去的餐厅，避开拥堵并完成导航。”
+- “落地后把酒店、晚餐、打车和行程提醒一起安排好。”
+- “我现在有二十分钟，附近有什么值得去、且能按时返回的地方？”
+
+此时 PM 设计的已经不只是页面和功能，而是**意图理解、工具调用、权限确认、状态管理、异常恢复和结果验证**。产品体验从一条静态流程，变成一个会循环观察与行动的动态系统。
+
+### 场景三：36 小时的 Hackathon
+
+在新加坡 SuperAI NEXT Hackathon 的高压环境里，团队没有时间等待完整流程：选题要迅速收敛，价值要在几分钟内讲清，产品要能运行，演示路径要稳定，所有人必须围绕“能否形成真实证据”工作。
+
+[请补充真实经历：MemoryCare 最初的问题假设是什么？团队何时第一次做出可运行 Demo？哪次取舍最痛苦？哪一步最能体现 PM 从表达者转向 Builder？]
+
+Hackathon 会暴露一个事实：**当生成和编码成本快速下降，最稀缺的能力不是写得多，而是知道该做什么、先证明什么、如何形成闭环。**
+
+SuperAI 官方将 2026 NEXT Hackathon描述为一场 36 小时冲刺，约 200 名 Builder 产出可运行的 AI 产品；主会场议程中，决赛 Demo 以 5 分钟为单位。这种约束决定了团队必须围绕“最短证据链”工作，而不是围绕文档完整度工作。来源：[SuperAI NEXT Hackathon](https://www.superai.com/next-hackathon)、[SuperAI Agenda](https://www.superai.com/agenda)。
+
+## 1.2 这场分享不回答“哪个工具最好”，而回答三个更重要的问题
+
+1. **你能否把一个模糊业务问题，转成 AI 可以协作执行的任务系统？**
+2. **你能否把输出变成可验证的产品证据，而不是看起来合理的文字？**
+3. **你能否让数据、用户和业务结果持续反馈到下一轮行动？**
+
+## 1.3 PM 的工作对象正在发生迁移
+
+| 过去 PM 主要管理 | AI Native PM 还要管理 |
+|---|---|
+| 页面、流程、需求、项目排期 | 意图、上下文、工具权限、Agent 状态、评估标准、反馈闭环 |
+| 人与人之间的信息传递 | 人、模型、工具和业务系统之间的协作协议 |
+| 一次性方案和版本交付 | 可持续运行、可观测、可停止、可纠偏的循环 |
+| “有没有做完” | “是否形成了可验证的结果，系统为何做出这个结果” |
+| 文档的一致性 | 现实结果、机器行为和组织判断的一致性 |
+
+因此，PM 的能力边界不是简单地“向技术侧移动”，而是从**内容生产者和协调者**，扩展为**问题定义者、系统设计者、原型 Builder 和反馈闭环经营者**。
+
+## 1.4 开场金句备选
+
+- “AI 最先替代的不是 PM，而是 PM 工作里那些没有判断、没有反馈、只有格式的部分。”
+- “当 Demo 的成本低于开一次评审会，PM 的默认交付物就不该只有 PPT。”
+- “过去我们设计页面之间的跳转；现在我们还要设计智能体在现实世界中的行动与纠错。”
+- “未来 PM 的护城河，不是积累更多模板，而是拥有一套能持续学习业务的工作系统。”
+
+---
+
+# 2. 趋势判断：AI 工具不是提效工具，而是新型工作系统
+
+## 2.1 从聊天框到工作系统：四年的主线
+
+可以用一个简化时间轴理解 2023–2026 的变化：
+
+- **2023：对话与生成。**重点是模型能不能回答、写作、总结和生成代码。
+- **2024：多模态与工具调用。**模型开始读文件、看图、调用外部工具，Agent 架构进入主流讨论。
+- **2025：Agent 与 Builder。**深度研究、Coding Agent、自然语言建站、MCP、企业知识接入快速普及，工作从“给答案”转向“完成任务”。
+- **2026：Harness、Skills、Automations 与 Loops。**竞争焦点转向如何提供上下文、沉淀可复用能力、可靠运行、自动评估、持续触发和人类治理。
+
+OpenAI 的 Deep Research 已支持结合公开 Web、上传文件、指定站点与连接的应用开展多步骤研究；Codex App 开始把 Skills、Automations 和后台任务放进同一工作界面。Anthropic 则把 Agent Skills 设计成可移植的指令、脚本与资源包，并持续强调 context engineering、长时任务状态和评估体系。Google 的 NotebookLM 与 Gemini Deep Research 则强化了“基于指定来源进行有依据的研究”和与 Workspace 数据连接的能力。来源：[OpenAI Deep Research](https://openai.com/index/introducing-deep-research/)、[OpenAI Codex App](https://openai.com/index/introducing-the-codex-app/)、[Anthropic Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)、[Anthropic Context Engineering](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)、[Google NotebookLM Deep Research](https://blog.google/innovation-and-ai/models-and-research/google-labs/notebooklm-deep-research-file-types/)。
+
+## 2.2 六个真正值得 PM 关注的迁移
+
+### 迁移一：从“回答问题”到“完成工作”
+
+早期模型的终点是输出一段文字；新一代 Agent 的终点是搜索、比较、修改文件、运行代码、调用业务系统并交付可检查的结果。PM 需要从写 Prompt，升级为定义任务边界和验收标准。
+
+### 迁移二：从“单个工具”到“连接环境”
+
+MCP、API、浏览器自动化和企业应用连接器，使模型能够访问知识库、代码库、数据、日历和流程系统。问题不再是“AI 会什么”，而是“它被允许看到什么、做什么、留下什么记录”。
+
+### 迁移三：从“临时指令”到“可复用 Skills”
+
+Prompt 是即时表达，Skill 是被版本管理、可测试、带资源和示例的能力包。PM 的优秀方法论开始可以像代码一样被复用、组合和迭代。
+
+### 迁移四：从“Copilot”到“后台 Agent”
+
+AI 不只在你输入时工作，还可以被定时器、事件、Webhook 或新数据触发。PM 的工作从“每次亲自发起任务”，转向“设计哪些信号应该触发什么动作”。
+
+### 迁移五：从“看起来不错”到“可评估”
+
+输出越多，验证越重要。Agent 产品的基础设施不只包括模型和工具，还包括测试集、Rubric、轨迹、监控、预算、停止条件和人工审核。Anthropic 对 Agent eval 的定义明确区分最终结果与执行轨迹；OpenAI 的 Harness Engineering 实践也把反馈回路作为 Agent-first 软件开发的核心。来源：[Anthropic：Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)、[OpenAI：Harness engineering](https://openai.com/index/harness-engineering/)。
+
+### 迁移六：从“个人提效”到“组织运行方式”
+
+领先团队不只采购工具，而是把组织共识转成规则、Skills、数据接口和评估机制。人员的角色从“逐步执行”迁移到“设定方向、设计环境、审查结果和维护系统”。
+
+## 2.3 一张图理解 AI Native 工作系统
+
+建议在 Slides 中画成四层塔形或同心圆：
+
+```text
+┌───────────────────────────────────────────────┐
+│  组织与治理层：目标、责任、权限、预算、风险、审计、人类决策        │
+├───────────────────────────────────────────────┤
+│  Loop 层：触发 → 行动 → 观察 → 评估 → 纠偏 → 记忆 → 再运行      │
+├───────────────────────────────────────────────┤
+│  Harness 层：上下文、Skills、工具、状态、工作流、评测、Guardrails │
+├───────────────────────────────────────────────┤
+│  模型与交互层：Prompt、多模态、生成、推理、对话                  │
+└───────────────────────────────────────────────┘
+```
+
+PM 最容易停留在最底层：换模型、学提示词、比较回答。真正的工作系统重构发生在上面三层。
+
+## 2.4 工具地图：不要按品牌记忆，要按“工作角色”组合
+
+| 类别 | 代表工具 | PM 真正要解决的问题 | 改变的工作环节 | 更像提效工具还是系统工具 | 推荐用法 |
+|---|---|---|---|---|---|
+| 深度研究与事实检索 | ChatGPT Deep Research、Gemini Deep Research、Perplexity、Genspark、Kimi、通义、豆包、DeepSeek | 如何快速建立有来源的事实底座，并识别证据缺口 | 桌面研究、竞品、政策、行业扫描 | 单独使用是提效；接入来源管理和复核后成为 Harness | 先定义问题树和来源优先级，再让模型搜；最终由人核验关键结论 |
+| 私有资料理解 | NotebookLM、ChatGPT Projects、Claude Projects、企业知识库 | 如何让模型长期理解项目上下文，而非每次从零开始 | 项目入门、会议/文档综合、知识问答 | Harness 核心 | 建立项目 Brief、术语表、决策日志和证据索引，不把文件堆积等同于知识管理 |
+| 协同写作与表达 | ChatGPT Canvas、Claude Artifacts/Design、Gamma、Napkin、Figma/FigJam AI、Miro AI、Mermaid、Excalidraw | 如何让观点更快变成结构、图示和可评审材料 | PRD、汇报、流程图、叙事 | 多数是提效层 | 先确定受众、论点和证据，再选表达工具；不要让生成排版替代内容判断 |
+| Coding / Builder | Cursor、Claude Code、百度 Comate、Windsurf、Replit、Lovable、v0、Bolt、GitHub Copilot、Codex、Trae、MarsCode | 如何把方案压缩成可点击、可调用、可测试的证据 | 原型、数据处理、自动化、Agent Demo | 系统改变器 | 用 Spec、验收标准、测试数据和版本控制约束 Agent；从纵向最小切片开始 |
+| Workflow / Agent | Dify、Coze、n8n、Zapier、LangGraph、OpenAI Agents SDK、CrewAI、AutoGen | 如何让多步骤任务稳定编排，并连接业务系统 | 调研、通知、审批、内容运营、客服、数据管道 | Harness 核心 | 从单 Agent、显式步骤和人工闸门开始，只有必要时再多 Agent |
+| 协议与连接 | MCP、API、Browser-use、RAG、数据库连接器 | 如何把模型接入真实工具和数据，同时控制权限 | 跨系统执行、浏览器任务、企业数据 | Harness 基础设施 | 最小权限、白名单工具、可撤销动作、敏感操作二次确认 |
+| 评估与可观测 | Evals、Tracing、日志、测试集、Rubric、监控 Dashboard | 如何知道模型是否真的完成任务、为何失败 | Agent 产品、自动化、内容质量、代码质量 | Loop 的地基 | 同时评估 Outcome 与过程轨迹；记录失败样本并更新 Harness |
+
+### 对几个常用工具的定位建议
+
+- **ChatGPT Deep Research / Gemini Deep Research / Perplexity**：适合建立外部证据底座，不应直接替代事实核验。OpenAI 的 Deep Research可限定站点并连接应用；Google 的 Deep Research 正在强化 MCP、自定义来源与可视化；Perplexity的产品核心仍是带引用的 Web-first 检索。来源：[OpenAI Deep Research](https://help.openai.com/en/articles/10500283-deep-research-in-chatgpt)、[Google 下一代 Deep Research](https://blog.google/innovation-and-ai/models-and-research/gemini-models/next-generation-gemini-deep-research/)、[Perplexity Hub](https://www.perplexity.ai/hub)。
+- **NotebookLM**：最适合“只围绕指定资料建立共识”，可用于项目文档、访谈、会议和研究报告的交叉理解；它的价值在 Grounding，而不是模型想象力。来源：[NotebookLM 研究能力](https://blog.google/innovation-and-ai/products/notebooklm/better-research-notebooklm/)。
+- **Cursor / Claude Code / Comate / Codex**：适合已经能给出文件结构、验收标准和调试反馈的 PM。不会定义结果时，Coding Agent 只会更快地产生代码债。
+- **Replit / Lovable / v0 / Bolt**：适合非技术 PM 快速做前台产品和纵向 Demo。Replit Agent 明确支持由自然语言创建应用并发布，Lovable强调生成可拥有、可部署的真实代码。来源：[Replit Agent](https://docs.replit.com/references/agent/overview)、[Lovable Docs](https://docs.lovable.dev/introduction/welcome)。
+- **Dify / Coze / n8n**：适合把调研、信息处理、通知、审批和内容工作连接成业务流程。PM 应首先画出状态机与失败路径，再进入搭建。
+- **LangGraph / OpenAI Agents SDK**：适合需要显式状态、工具、Guardrails、Human-in-the-loop 和 Tracing 的工程化 Agent。来源：[LangGraph](https://github.com/langchain-ai/langgraph)、[OpenAI Agents SDK](https://developers.openai.com/api/docs/guides/agents)。
+
+## 2.5 PM 的推荐组合，不是“一人装十个工具”
+
+### 组合 A：研究与表达入门
+
+```text
+Deep Research / Perplexity → NotebookLM / Projects → Canvas / Markdown
+```
+
+适合：刚开始系统使用 AI 的 PM。  
+目标：把“搜资料—整理—写文档”变成一条有来源、可复核的链路。
+
+### 组合 B：原型 Builder
+
+```text
+项目 Brief → Cursor / Comate / Replit / Lovable → GitHub → 用户测试
+```
+
+适合：希望把方案做成可运行 Demo 的 PM。  
+目标：交付“可点击证据”，而不是只交付页面描述。
+
+### 组合 C：个人 Harness
+
+```text
+Project Context + Skills + Tools + Workflow + Evals + Decision Log
+```
+
+适合：有稳定业务领域、重复任务较多的 PM。  
+目标：让优秀做法可复用、可交接、可改进。
+
+### 组合 D：团队 Loop
+
+```text
+事件/定时触发 → Agent 执行 → 业务数据验证 → 人类闸门 → 状态持久化 → 下一轮
+```
+
+适合：高频、可评估、风险可控的任务，如反馈归类、竞品跟踪、内容质量巡检、实验监控。  
+目标：持续运行，而不是每次从聊天框手工启动。
+
+## 2.6 2026 年 PM 使用 AI 的最高阶方式
+
+不是使用最多工具，也不是生成最多内容，而是：
+
+> **把业务判断编码为目标、上下文、约束、Skills 和评估标准；让 AI 在可观测、可停止、可追责的边界内持续执行；由 PM 对问题、证据和结果负责。**
+
+---
+
+# 3. 大厂实践：中国互联网公司正在如何用 AI 重构工作流
+
+## 3.1 先给结论：公开案例呈现出的五个共同方向
+
+1. **从代码补全走向完整研发流程。**需求理解、架构分析、测试、评审、发布和监控开始进入同一套 Agent 环境。
+2. **从个人技巧走向组织级 Skills 与规则。**优秀员工的工作方法开始被沉淀为可版本管理的资产。
+3. **从生成率走向整体流动效率与质量。**“AI 写了多少”并不等于“业务交付更快”；需要同时看返工、缺陷、等待和用户结果。
+4. **从人机协作走向系统间协作。**企业 IM、文档、项目管理、数据和业务系统通过 MCP、API 或 Agent 平台连接。
+5. **从页面入口走向意图与行动接口。**手机 OS Agent 与 App 的合作，要求产品暴露可调用能力，并把权限、确认、回退和可观测性设计清楚。
+
+## 3.2 公开案例表
+
+> 说明：下表只保留本轮研究中能找到较新一手资料、且与本次分享主线高度相关的案例。公开材料以研发与企业协作为主，产品、运营和商业化内部指标披露较少；没有足够证据时不强行补齐。
+
+| 公司 / 生态 | 一手来源 | AI 实践 | 改变的工作环节 | 对 PM 的启发 | 是否适合分享 |
+|---|---|---|---|---|---|
+| 百度 | [文心快码 Comate 4.0 文档](https://cloud.baidu.com/doc/COMATE/s/xmm4hx69k)、[自定义 Subagent](https://cloud.baidu.com/doc/COMATE/s/Rmfb62bhj)、[2025 实践分享](https://comate.baidu.com/zh/news/news/19) | Comate 4.0 将 Skills、MCP、Subagents、Explore Agent 与 Page Builder 放入统一开发环境；公开材料称 2025 年百度日新增代码中由 Comate 生成的比例超过 43%，整体工程效率提升超过 20% | 从补全代码扩展到探索、拆解、并行执行、页面构建与组织规则 | PM 不应只让 AI “写需求”，而应把领域知识、验收标准和常见任务沉淀成可调用 Skill；Subagent 与 Skill 应分别承担执行者和能力包的角色 | **高**：与百度语境、Harness 和 Builder 直接相关；内部引用数据前再核验口径 |
+| 腾讯 | [腾讯：效率智能体工具集](https://www.tencent.com/zh-cn/articles/2202350.html)、[CodeBuddy](https://copilot.tencent.com/) | 2026 年公开文章称 CodeBuddy 覆盖超过 95% 工程师、编码时间下降约 40%；WorkBuddy探索人类与 AI 混合开发，并通过 MCP、Skills、CLI 连接腾讯文档、会议等系统 | 从 IDE 单点辅助进入跨文档、会议、开发和交付的协同环境 | “工具覆盖率”之后，真正的竞争在环境、评估、推理与行动；PM 也需要跨文档、数据和项目系统的工作 Harness | **高**：可作为组织级智能工作环境案例 |
+| 阿里云 / 通义灵码 | [AI Coding 效率度量](https://developer.aliyun.com/article/1631168)、[灵码产品演进](https://developer.aliyun.com/article/1649529)、[多任务能力](https://developer.aliyun.com/article/1661329) | 从代码补全扩展到多文件修改、多轮任务、版本管理；公开文章强调不能用“生成代码占比 × 编码时间”代表整体研发效率，要看需求、协作、测试、CI、质量与业务结果 | 把度量范围从“生成量”扩展到端到端交付 | 对 PM 的直接提醒：不要用“AI 写了多少文档”证明提效；应看决策周期、返工、实验速度、缺陷和用户结果 | **高**：适合用来反驳表层提效指标 |
+| 钉钉 / 阿里云 | [钉钉 AI Agent](https://www.alibabacloud.com/blog/alibaba%E2%80%99s-dingtalk-hits-700m-users-and-unveils-ai-agent-to-boost-workspace-productivity_600754)、[AI 员工案例](https://www.alibabacloud.com/blog/602533) | 在招聘、财务分析、销售和客服等场景引入可定制 Agent；阿里云公开“云宝”及多类 AI 员工实践 | 从助手问答进入角色化、跨系统任务执行 | PM 需要为 Agent 设计岗位边界、输入输出、权限和升级机制，而不是只给一个人格 Prompt | **中高**：适合作为“数字员工 ≠ 聊天机器人”案例 |
+| 字节跳动 / 飞书 | [飞书 AI 应用成熟度模型](https://www.feishu.cn/product/AI-Application-Maturity-Model)、[Aily](https://www.feishu.cn/content/article/7576921890476788922)、[工作流 AI Agent 节点](https://www.feishu.cn/hc/zh-CN/articles/643175485940-%E4%BD%BF%E7%94%A8%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%9A%84-ai-agent-%E8%8A%82%E7%82%B9) | 把企业知识、业务系统、Skills、工作流和 Agent 编排结合；支持从业务信号到任务执行的流程化配置 | 企业协同从“人找信息”转向“事件驱动的智能流程” | AI Native 组织的地基是结构化业务数据、流程和权限，不是换一个更强模型 | **高**：适合说明组织基础设施的重要性；注意厂商材料需与独立判断区分 |
+| 美团 | [31 万行代码 AI 重构](https://tech.meituan.com/2026/05/07/Agent-AI-Coding.html)、[AI Coding 与单元测试](https://tech.meituan.com/2025/12/05/AI-Coding-Unit-Testing.html) | 大规模 AI 重构实践发现：AI 生成比例提高不会让复杂度自动收敛；团队需把共识转成 AI 可执行规则，用测试和评估建立验证闭环 | 从“人人对齐”升级为“人机对齐”，从生成代码升级为规则、验证和持续治理 | 这是 Harness/Loop 最好的中国案例之一：PM 的判断框架也必须转成检查表、Rubric、数据和测试，而不是藏在个人经验里 | **最高**：建议作为理论主线的实证案例 |
+| 京东 | [京点点 AIGC 平台](https://developer.jdcloud.com/article/4386)、[京东广告 Agent](https://developer.jdcloud.com/article/4198) | 面向电商运营与广告构建内容生成和 Agent 系统，覆盖商品内容、营销和投放等任务；公开材料提到多场景规模化调用 | 从一次性内容生产进入规模化运营与效果反馈 | 生成内容只是起点，点击、转化、审核和用户反馈才构成 Loop；PM 要设计“结果回流到策略”的路径 | **中高**：适合商业化和内容 PM |
+| 华为 HarmonyOS | [HarmonyOS AI 能力与 Intent/Agent Framework](https://developer.huawei.com/consumer/en/doc/atomic-guides/atomic-ai-development)、[HMAF 开放合作](https://www.huawei.com/en/corporate-information/openness-collaboration-and-shared-success) | 通过意图框架和 Agent Framework 让应用能力被系统级智能服务调用；公开资料称 HMAF 已覆盖大量应用功能 | 从 App 页面入口转向系统意图与可调用能力 | 地图产品要把“页面功能”抽象为 Action Contract：参数、权限、确认、状态、结果和失败恢复 | **高**：直接对应 App Agent × OS Agent |
+| HONOR | [Magic7 与 YOYO Agent](https://www.honor.com/global/news/honor-magic7-china-launch/)、[Magic V5](https://www.honor.com/global/news/honor-magic-v5-china-launch/) | YOYO Agent可通过自然语言执行跨场景任务；后续公开能力涵盖搜索、文件、打车、PPT 等 | 从语音助手向跨 App 任务代理迁移 | PM 需要设计可组合的原子能力和安全确认，而不是仅优化一个页面入口 | **高**：作为手机 OS Agent 合作案例 |
+| vivo | [vivo 意图框架白皮书/开发文档](https://developers.vivo.com/doc/d/9ba4f52f9ecb40c08faefb4b8a50cf49) | 通过意图框架帮助系统和应用进行能力发现与调用 | App 与 OS 的接口从深链和页面跳转，向结构化意图和动作协议演进 | 地图/本地生活 PM 要提前定义意图 schema、可执行动作、授权与结果回传 | **高**：可用于构建“Agent 时代产品接口”框架 |
+
+### 公开资料不足的公司
+
+快手、小红书、拼多多、携程、滴滴等公司确有大量 AI 产品和招聘/大会信息，但本轮研究没有找到足够新、足够细、且能证明其“内部 PM 工作系统重构”的一手公开材料。正式分享中不建议为了“集齐大厂”使用二手传闻；可把它们列为下一轮访谈或内部交流对象。
+
+## 3.3 表层提效与系统重构，如何区分
+
+| 判断维度 | 表层提效 | 系统重构 |
+|---|---|---|
+| 工作对象 | 一段文字、一个页面、一段代码 | 一条端到端业务链路 |
+| 上下文 | 每次手工复制 | 项目知识、规则和状态可持续读取 |
+| 执行方式 | 人每次触发、逐步提示 | 事件触发、Agent 编排、自动执行 |
+| 质量控制 | 人凭感觉检查 | 测试集、Rubric、业务指标、Trace |
+| 组织资产 | 个人 Prompt | 团队 Skills、规则、Connector、Eval |
+| 反馈 | 完成即结束 | 结果回流、错误分类、Harness 更新 |
+| 风险 | 靠人记住 | 权限、预算、停止、回滚、升级机制 |
+
+## 3.4 对百度地图 PM 的四个直接启发
+
+1. **把地图能力从页面组件升级为 Agent 可调用的“意图—动作—结果”契约。**例如检索、路线、到店、预约、收藏、分享和提醒，需要明确参数、权限、确认和回退。
+2. **把优秀 PM 的隐性经验变成 Skills 与 Evals。**“什么是好需求”“什么情况下不能推荐”“什么是高质量 POI 证据”都应变成机器可读的规则和测试样例。
+3. **从内容生成率转向业务闭环。**AI 生成多少条内容不是终点；内容是否可信、是否被采用、是否改善决策和履约，才是 Loop 的评价标准。
+4. **为 Agent 失败而设计。**错误意图、工具超时、数据冲突、权限不足、现实世界变化都必须有确认、降级、解释和恢复路径。
+
+---
+# 4. PM 的 AI 进化三部曲：Prompt Engineering → Harness Engineering → Loop Engineering
+
+## 4.1 先做一个重要澄清
+
+这三个概念不是严格互相替代的版本号，而是三个不同的工程尺度：
+
+- Prompt 仍然重要，因为任务需要被表达清楚。
+- Harness 仍然需要 Prompt，但还要提供环境、工具、状态、约束和评估。
+- Loop 建立在 Harness 之上，关注系统如何被持续触发、如何根据结果调整下一轮。
+
+更完整的技术演进其实可以写成：
+
+```text
+Prompt Engineering
+        ↓
+Context Engineering
+        ↓
+Harness Engineering
+        ↓
+Loop Engineering
+```
+
+其中 Context Engineering 是关键桥梁：从“把所有信息塞进一次 Prompt”，转向“在正确时刻给模型最相关的状态、文件、工具说明和历史决策”。Anthropic 将 Context Engineering概括为设计和维护模型在每一步可见的信息集合，并建议使用标识符、链接和文件路径按需加载，而不是无限堆积上下文。来源：[Anthropic：Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)。
+
+为了演讲清晰，本次仍采用三部曲：
+
+> **把问题问清楚 → 把能力系统化 → 把反馈闭环跑起来。**
+
+## 4.2 一张对比表
+
+| 维度 | Prompt Engineering | Harness Engineering | Loop Engineering |
+|---|---|---|---|
+| 核心问题 | 这一次怎样让模型理解并回答得更好？ | 怎样让 Agent 在一个可靠环境里完成任务？ | 怎样让系统持续发现、执行、验证和进化？ |
+| 优化对象 | 指令与一次上下文 | 环境、知识、工具、Skills、状态、规则、评估 | 触发、控制流、反馈、学习、停止与升级 |
+| 时间尺度 | 一轮到数轮对话 | 一项任务或一个项目 | 长期、周期性或事件驱动 |
+| 典型产物 | Prompt 模板 | AGENTS.md、Skills、工具连接、工作流、Eval、Guardrails | Loop Card、触发器、状态机、反馈数据、升级矩阵、变更日志 |
+| 主要风险 | 模糊、遗漏、幻觉 | 上下文污染、权限过大、工具不稳、无验收 | 无限运行、错误自强化、成本失控、奖励投机、责任模糊 |
+| PM 角色 | 提问者 / 编辑者 | 系统设计者 / 验收者 | Loop Owner / 业务责任人 |
+| 成熟标志 | 结果可用 | 结果稳定、可重复、可追踪 | 结果能持续改善，且知道何时停、何时找人 |
+
+一句话版本：
+
+> **Prompt 决定一次回答；Harness 决定一次任务能否可靠完成；Loop 决定一套能力能否持续运行并越跑越好。**
+
+---
+
+## 4.3 Prompt Engineering：把问题问清楚
+
+### 定义
+
+Prompt Engineering 是通过角色、目标、上下文、约束、示例、输出格式和验收要求，降低模型对任务的误解和搜索空间。
+
+对于 PM，它最重要的价值不是“写神奇咒语”，而是倒逼自己把问题说清楚：
+
+- 我到底要做什么决策？
+- 已知事实与假设分别是什么？
+- 目标用户是谁？
+- 有哪些不可违反的约束？
+- 什么样的输出才算可用？
+- 哪些结论必须给出来源或证据？
+
+### 为什么它是第一阶段
+
+PM 的很多失败并非来自模型能力，而是任务定义不完整。模糊地问“帮我写一份 PRD”，模型只能用通用套路填补空白；结果流畅，却不一定对应真实业务。
+
+### 一个适合 PM 的 Prompt 骨架
+
+```markdown
+# Role
+你扮演什么专业角色，但不要假设未提供的业务事实。
+
+# Decision to Make
+这份输出最终支持什么决策？
+
+# Context
+业务背景、用户、现状、已知数据、术语、历史决策。
+
+# Inputs
+可使用的资料与来源；明确哪些是事实，哪些是假设。
+
+# Constraints
+时间、资源、合规、技术、品牌、不可做事项。
+
+# Task
+按步骤完成：澄清问题 → 分析 → 提出备选 → 比较 → 建议。
+
+# Evaluation Criteria
+正确性、完整性、证据、可执行性、一致性、风险。
+
+# Output Format
+表格 / Markdown / JSON / PRD 章节 / 决策备忘录。
+
+# Uncertainty Policy
+缺少证据时明确标注，不得虚构；列出需要补充的问题。
+```
+
+### PM 场景中的 Prompt 示例
+
+#### 需求分析 Prompt
+
+```markdown
+你是资深地图产品评审者。请不要直接写方案，先把以下需求拆成：
+1. 用户任务与触发场景；
+2. 可验证的问题证据；
+3. 当前替代方案；
+4. 目标指标与反指标；
+5. 必须成立的关键假设；
+6. 最小验证方式；
+7. 权限、数据、合规和体验风险。
+
+对每一项标记“事实 / 推断 / 待验证”。最后给出：
+- 建议立项、补证据还是暂缓；
+- 你最担心的三个反例；
+- 下一步需要补充的五个问题。
+```
+
+#### 用户研究 Prompt
+
+```markdown
+基于访谈原文进行编码，不要只做摘要：
+- 保留能支持主题的原句和访谈编号；
+- 区分用户陈述、实际行为、研究者解释；
+- 找出跨访谈重复模式、矛盾和极端案例；
+- 不把出现频率直接等同于重要性；
+- 为每个洞察给出置信度与需要补证的方式。
+```
+
+#### 竞品分析 Prompt
+
+```markdown
+围绕同一用户任务比较竞品，而非按功能罗列。
+每个结论必须包含来源、日期和可复核证据。
+输出：任务链路、默认策略、关键差异、成功条件、失败路径、
+对我方的可迁移启发与不可照搬原因。
+```
+
+#### PRD Prompt
+
+```markdown
+把已确认的决策写成可测试 Spec，而不是扩写背景。
+每项需求必须包含：触发条件、前置状态、主流程、异常流程、
+数据/权限、埋点、验收标准、非目标、未决问题。
+发现输入冲突时停止补写并列出冲突。
+```
+
+#### 数据分析 Prompt
+
+```markdown
+先生成分析计划，再写 SQL。
+明确指标口径、时间窗口、粒度、分母、去重逻辑、异常值与对照。
+SQL 输出后给出自检查询，并区分“数据事实”和“因果解释”。
+```
+
+#### 汇报材料 Prompt
+
+```markdown
+面向[受众]，围绕一个明确决策组织叙事：
+现状证据 → 为什么现在 → 关键判断 → 备选方案 → 推荐与取舍 → 请求决策。
+删除不能改变决策的页面；每一页只保留一个可复述观点。
+```
+
+#### 复盘 Prompt
+
+```markdown
+不要写成事件流水账。按“预期—实际—差距—机制—行动”复盘。
+区分偶然事件、系统性问题和可控因素；
+每条行动必须有 Owner、截止时间、验证方式和停止条件。
+```
+
+### Prompt Engineering 的局限
+
+1. **上下文是一次性的。**同一业务每次都要重新解释。
+2. **行为不稳定。**模型版本、输入顺序和外部信息变化会改变结果。
+3. **无法可靠调用真实系统。**Prompt 本身不提供权限、工具或状态。
+4. **缺少客观验收。**回答“看起来合理”，不代表任务完成。
+5. **个人技巧难以沉淀。**好的 Prompt 可能只存在个人收藏夹里。
+6. **没有持续反馈。**输出结束后，真实结果不会自动回流。
+
+所以，仅会写 Prompt，就像只会写需求描述却没有研发环境、测试和监控：有用，但远远不够。
+
+---
+
+## 4.4 Harness Engineering：把能力系统化
+
+### 行业语境中的定义
+
+“Agent Harness”通常指包围模型的一整套执行环境：它负责接收输入、组织上下文、分配工具、保存状态、执行规则、评估结果并返回产物。Anthropic 在 Agent Evals 文章中把 Harness描述为处理输入、编排工具并返回结果的系统；OpenAI 在 2026 年的 Harness Engineering 案例中进一步强调，人类工程师的工作从逐行编码迁移为设计环境、表达意图、构建反馈回路，让 Agent 在一个结构化代码库中可靠工作。来源：[Anthropic Agent Evals](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)、[OpenAI Harness Engineering](https://openai.com/index/harness-engineering/)。
+
+### 面向 PM 的工作定义
+
+> **PM AI Harness 是把业务上下文、判断框架、可复用 Skills、工具权限、执行流程、状态记忆和验收机制组织在一起，使 AI 能稳定参与真实工作的个人或团队系统。**
+
+它不是 Prompt 库，因为 Prompt 库通常缺少五样东西：
+
+- 不知道项目的最新状态；
+- 不能直接使用工具和数据；
+- 不保存执行历史；
+- 没有明确的质量门槛；
+- 不知道什么情况下必须停下找人。
+
+### 一个完整 PM Harness 的八层
+
+| 层 | 要回答的问题 | 典型资产 |
+|---|---|---|
+| 1. Knowledge Layer | AI 必须知道哪些业务事实与历史？ | 项目 Brief、术语表、用户研究、指标字典、决策日志、竞品证据库 |
+| 2. Prompt Layer | 任务怎样被清楚表达？ | 任务模板、角色说明、输出格式、不确定性规则 |
+| 3. Skill Layer | 哪些专业能力可以复用和版本化？ | 需求拆解、访谈编码、PRD 评审、SQL 自检、实验设计、Demo 验收 Skill |
+| 4. Tool Layer | AI 被允许调用什么？ | 搜索、文件、GitHub、数据仓库、原型工具、MCP Server、业务 API |
+| 5. Workflow Layer | 任务如何分步、并行和交接？ | 调研→判断→方案→原型→验证→汇报的状态机 |
+| 6. Agent Layer | 哪些角色负责执行？ | Researcher、Critic、Prototype Builder、Data Analyst、Compliance Reviewer |
+| 7. Output Layer | 什么是标准交付物？ | Decision Memo、PRD、HTML Demo、Dashboard、实验方案、Slides |
+| 8. Feedback Layer | 怎样证明结果、更新系统？ | Rubric、测试集、用户反馈、业务指标、失败样本、Harness 变更记录 |
+
+此外，三条“横向护栏”必须贯穿八层：
+
+1. **Policy & Permission：**保密等级、最小权限、敏感动作确认、外发限制。
+2. **State & Memory：**当前进度、未决问题、历史决策和版本记录。
+3. **Observability & Cost：**运行日志、来源、Trace、耗时、Token/调用成本和异常告警。
+
+### PM Harness 架构图的文字版
+
+```text
+业务目标 + 成功标准 + 风险边界
+                 ↓
+     Knowledge / Context / Decision Log
+                 ↓
+          Prompts + Reusable Skills
+                 ↓
+     Tools / MCP / APIs / Data / GitHub
+                 ↓
+        Workflow + Agents + Human Gates
+                 ↓
+      PRD / Demo / Analysis / Experiment
+                 ↓
+  Evals + User Feedback + Business Metrics
+                 ↺
+      更新 Context、Skill、规则和下一步
+```
+
+### 一个地图内容 PM 的示例 Harness
+
+> 示例为抽象工作流，不含百度内部事实和数据。
+
+**目标：**每周从用户反馈、内容质量数据和外部变化中，识别最值得进入需求池的三个问题，并快速验证一项改进。
+
+**Knowledge：**产品目标、用户分层、POI/内容术语、指标口径、历史需求和决策日志。  
+**Skills：**反馈去重与归因、证据等级判断、问题机会评分、竞品核验、实验设计、PRD Critic。  
+**Tools：**反馈库、数据查询、Web Research、原型工具、GitHub。  
+**Workflow：**
+
+1. 汇总本周新反馈和异常指标；
+2. Research Agent 做归类并保留证据链接；
+3. Critic Agent 找反例、重复问题和证据缺口；
+4. PM 进行机会排序并确认一个最小验证题；
+5. Builder Agent生成 HTML Demo 或交互原型；
+6. 用 5–8 位目标用户/内部专家完成快速测试；
+7. 结果写入决策日志和下一轮任务。
+
+**Output：**一页问题卡、证据包、可运行 Demo、实验计划。  
+**Feedback：**采用率、任务成功率、用户质性反馈、失败轨迹。  
+**Human Gate：**问题优先级、用户承诺、敏感数据、正式上线都必须由 PM/团队决策。
+
+这时，AI 不再只是帮你写一份周报，而是在一套明确边界内参与每周产品循环。
+
+---
+
+## 4.5 Loop Engineering：把反馈闭环跑起来
+
+### 这是一个新兴概念，不是定论
+
+2026 年 6 月，Addy Osmani 在文章《Loop Engineering》中把它描述为一种更高层的工作方式：不再由人持续充当“提示 Agent 的人”，而是通过定时自动化、Worktree、Skills、连接器、Sub-agents 与外部记忆，让多条任务循环持续运行；他同时明确提醒，这一方式仍处早期，成本、错误累积和专家监督都不可忽视。来源：[Addy Osmani：Loop Engineering](https://addyosmani.com/blog/loop-engineering/)。
+
+LangChain 随后在《The Art of Loop Engineering》中提出四种叠加循环：Agent Loop、Verification Loop、Event-driven Loop 和 Hill-climbing Loop。核心观点是：循环不是简单地让 Agent 再试一次，而是把执行、验证、触发和 Harness 改进连接起来。来源：[LangChain：The Art of Loop Engineering](https://www.langchain.com/blog/the-art-of-loop-engineering)。
+
+因此，本次分享可以使用 Loop Engineering，但必须加一句限定：
+
+> **它是对 Agent、自动化、Eval、Human-in-the-loop 和产品反馈机制的一种新整合语言，目前正在形成中。**
+
+### 面向 PM 的定义
+
+> **Loop Engineering 是设计一套持续运行的人机控制回路：系统在明确目标与边界下被事件触发，读取状态，执行行动，观察现实结果，使用规则或数据评估，决定继续、纠偏、升级或停止，并把新信息写回下一轮。**
+
+它的重点不只是“重复”，而是**受控地重复，并在每一轮获得新的可验证信息**。
+
+### 一个完整 Loop 的九个部件
+
+```text
+1. Objective     要优化什么？不能牺牲什么？
+2. Trigger       什么事件、时间或阈值启动？
+3. State         当前状态、历史决策和预算是什么？
+4. Context       这一轮需要哪些知识和证据？
+5. Act           Agent/人/工具分别做什么？
+6. Observe       从现实世界读取什么结果？
+7. Evaluate      用什么标准判定成功、失败或不确定？
+8. Decide        继续、重试、换策略、找人还是停止？
+9. Persist       写回哪些记忆、数据、失败样本和 Harness 变更？
+```
+
+外围必须有：权限、成本上限、人工闸门、回滚机制和责任人。
+
+### LangChain 的四层循环，翻译成 PM 语言
+
+| 循环 | 工程含义 | PM 场景 |
+|---|---|---|
+| Agent Loop | 模型调用工具、观察结果，直到完成任务 | 研究 Agent 搜索多轮资料，直到证据覆盖问题树 |
+| Verification Loop | 用规则、测试或评审者检查输出，失败则反馈重做 | PRD Critic按验收清单打分，低于门槛退回修订 |
+| Event-driven Loop | 被定时器、Webhook 或数据变化触发 | 新增大量差评、指标异常或竞品发布后自动启动分析 |
+| Hill-climbing Loop | 汇总运行轨迹，持续改进 Harness | 每周分析失败原因，更新 Skill、规则、工具说明或 Eval 数据集 |
+
+### Loop 与 Agent、Automation、HITL、产品实验的关系
+
+- **Agent 是执行者，Loop 是控制结构。**没有 Loop 的 Agent 可能只跑一次；没有 Agent 的 Loop 也可以由人和脚本完成。
+- **Automation 是触发和执行机制，Loop 还包括评估和学习。**仅定时生成周报不是完整闭环。
+- **Human-in-the-loop 不是“系统不够智能的补丁”，而是治理设计。**在目标冲突、敏感动作、低置信度和 Harness 变更处，人必须保留决定权。
+- **产品实验是最成熟的 Loop 之一。**假设→实验→数据→判断→下一轮，本质上就是受控反馈循环。
+- **数据闭环不等于正确闭环。**错误指标会把系统推向错误方向；必须同时设置反指标和质性审查。
+
+### 为什么 PM 尤其需要 Loop Engineering
+
+工程师通常能用测试验证代码，PM 面对的却是开放世界：用户偏好变化、供给质量不稳定、业务目标冲突、因果关系难以确认。正因为没有天然的 Ground Truth，PM 更需要主动设计：
+
+- 哪些信号可信；
+- 什么结果算“更好”；
+- 什么时候不能自动化；
+- 哪个失败值得沉淀为新规则；
+- 谁对最终结果负责。
+
+Loop Engineering 把 PM 最核心的产品能力——**设目标、做取舍、看反馈、迭代**——变成 AI 时代的系统设计能力。
+
+### PM LOOP Canvas
+
+每设计一条 Loop，先填这张卡：
+
+| 字段 | 要填写的内容 |
+|---|---|
+| Loop 名称 | 例如“高频用户投诉发现与验证 Loop” |
+| Owner | 对业务结果负责的人，不是 Agent 名称 |
+| Objective | 单一主目标 + 反指标 |
+| Trigger | 时间、事件、阈值或人工启动 |
+| Inputs | 数据源、时效、权限、可信度 |
+| State | 保存哪些历史、版本和未决问题 |
+| Actions | 人、Agent、工具的步骤及顺序 |
+| Evaluator | 规则、模型评审、测试集、用户或业务指标 |
+| Human Gates | 哪些动作必须审批 |
+| Stop / Escalate | 成功、失败、预算用尽、低置信度、风险事件 |
+| Memory Update | 哪些结果写入项目知识、Skill 或失败库 |
+| Review Cadence | 多久审查 Loop 本身是否仍有价值 |
+
+### 三部曲的演讲版表达
+
+```text
+Prompt Engineering：把一次对话说清楚。
+Harness Engineering：把一项工作做稳定。
+Loop Engineering：把一套能力跑持续。
+```
+
+或：
+
+```text
+问得好只是起点；
+系统化才可复用；
+有反馈，能力才会进化。
+```
+
+---
+
+# 5. PM 自进化五阶段：从 AI User 到 AI Builder & Loop Owner
+
+## 5.1 框架名称
+
+# AI-Native PM 五阶跃迁
+
+**USE → DELEGATE → ORCHESTRATE → SYSTEMIZE → BUILD & EVOLVE**  
+中文记忆：**会用、会派、会编、会组织、会创造与迭代。**
+
+一句话定义：
+
+> **从会召唤模型，到能经营一套持续产出业务结果的智能工作系统。**
+
+## 5.2 五阶段总表
+
+| 阶段 | 身份 | 与 AI 的关系 | 典型交付 | 对应工程重点 |
+|---|---|---|---|---|
+| L1 使用：AI User | 工具使用者 | AI 是搜索/写作工具 | 摘要、文案、初稿 | Prompt 基础 |
+| L2 驱动：AI Operator | 任务委派者 | AI 是助理 | 多步骤分析、结构化材料 | Prompt + 任务拆解 + 复核 |
+| L3 协同：AI Orchestrator | 流程编排者 | AI 是多角色团队 | 研究→方案→原型的工作流 | Context + Workflow + Skills |
+| L4 组织：AI System Designer | Harness 设计者 | AI 是工作系统 | 团队知识、规则、工具、Eval | Harness Engineering |
+| L5 创造：AI Builder & Loop Owner | 原型 Builder / 闭环负责人 | AI 是执行系统与实验室 | 可运行 Demo、Agent、持续 Loop | Builder + Loop Engineering |
+
+## 5.3 每阶段的行为、工具、能力、坑点与进阶动作
+
+### L1：AI User｜会用
+
+**典型行为**
+
+- 用模型总结文档、翻译、润色、生成脑暴清单。
+- 对同一问题在不同模型中比较回答。
+- 把 AI 当成更快的搜索框和编辑器。
+
+**推荐工具**  
+ChatGPT、Claude、Gemini、Kimi、DeepSeek、豆包、NotebookLM。
+
+**需要提升的能力**  
+目标表达、来源意识、隐私意识、基本事实核验。
+
+**常见坑**
+
+- 把流畅当正确；
+- 复制敏感数据到不合规环境；
+- 直接拿生成内容作为结论；
+- 工具切换很多，工作方式没有变化。
+
+**进入下一阶段的动作**  
+不再只问“给我答案”，开始明确背景、限制、格式和验收标准；把复杂任务拆成步骤。
+
+### L2：AI Operator｜会派
+
+**典型行为**
+
+- 让 AI 先制定计划，再逐步执行。
+- 为调研、PRD、数据分析设计固定模板。
+- 主动让模型找反例、检查遗漏和标注不确定性。
+
+**推荐工具**  
+Deep Research、Projects、Canvas、NotebookLM、Perplexity、结构化 Prompt 模板。
+
+**需要提升的能力**  
+任务分解、证据判断、编辑与审稿、指标口径、异常意识。
+
+**常见坑**
+
+- 把一个长 Prompt 当成“自动化”；
+- 一次塞入过多材料，导致上下文污染；
+- 只让 AI 自我评价，没有外部证据；
+- 没有保存中间决策和失败原因。
+
+**进入下一阶段的动作**  
+把重复步骤沉淀成 Skill，明确每一步的输入、输出和交接条件，开始连接多个工具。
+
+### L3：AI Orchestrator｜会编
+
+**典型行为**
+
+- 用研究、批判、原型和分析等不同角色协同完成任务。
+- 把搜索、知识库、数据、原型和文档串成工作流。
+- 通过 n8n、Dify、Coze 或脚本减少手工搬运。
+
+**推荐工具**  
+Dify、Coze、n8n、MCP、Cursor/Comate、GitHub、Mermaid、基础 API。
+
+**需要提升的能力**  
+流程建模、状态机、数据接口、权限边界、失败路径、成本意识。
+
+**常见坑**
+
+- 迷信多 Agent，增加沟通噪声；
+- 自动化一个本来就不合理的流程；
+- 每一步都生成很多内容，却没有统一成功标准；
+- 工具链太复杂，维护成本高于收益。
+
+**进入下一阶段的动作**  
+把项目上下文、Skills、工具说明、Eval 和权限纳入统一仓库；让流程可复现、可版本化。
+
+### L4：AI System Designer｜会组织
+
+**典型行为**
+
+- 维护团队级 Context、AGENTS.md、Skills、规则、决策日志和 Eval Set。
+- 为 Agent 定义最小权限、人工闸门、回滚和异常升级。
+- 用失败轨迹更新 Harness，而不是每次临时补 Prompt。
+
+**推荐工具**  
+GitHub、Claude Code/Cursor/Comate/Codex、Agent Skills、OpenAI Agents SDK/LangGraph、Tracing/Evals、企业知识库。
+
+**需要提升的能力**  
+系统设计、知识治理、评估设计、风险控制、团队标准化、变更管理。
+
+**常见坑**
+
+- 过度框架化，系统还没产生价值就建设平台；
+- 把文档数量当成知识质量；
+- Eval 只测格式，不测业务结果；
+- 让个人偏见变成组织级自动规则。
+
+**进入下一阶段的动作**  
+选择一个高频、可评估、低风险场景，把 Harness 接入真实触发和业务反馈，做成可运行产品或内部服务。
+
+### L5：AI Builder & Loop Owner｜会创造与迭代
+
+**典型行为**
+
+- 能把问题和 Spec 变成可运行 HTML、App 或 Agent Demo。
+- 为 Agent 接入真实工具、数据和用户反馈。
+- 经营一条持续 Loop，并定期审查目标、Eval 和 Harness。
+- 让 Demo 成为研发、设计和业务共创的起点。
+
+**推荐工具**  
+Cursor、Claude Code、Comate、Replit、Lovable、v0、GitHub、Dify/LangGraph/OpenAI Agents SDK、数据与监控工具。
+
+**需要提升的能力**  
+原型工程、API、Git、基础前后端、实验设计、可观测性、产品责任与叙事。
+
+**常见坑**
+
+- 把能运行等同于能上线；
+- Demo 只覆盖 Happy Path；
+- Loop 没有停止条件，或用同一个模型既生成又裁判；
+- 过度自动化高风险决策；
+- PM 亲自“做很多”，却没有推动团队采用。
+
+**持续进化动作**  
+把每次运行留下的证据转成数据集、规则、工具改进和组织学习；由“做一个 Demo”升级为“维护一套能力”。
+
+## 5.4 这个框架与三种 Engineering 的对应关系
+
+```text
+L1–L2：Prompt Engineering 为主
+L2–L3：Context Engineering 与 Workflow 为主
+L3–L4：Harness Engineering 为主
+L4–L5：Builder + Loop Engineering 为主
+```
+
+成熟度不是看会多少工具，而看三件事：
+
+1. **可复现：**换一个人或下一周还能跑；
+2. **可验证：**知道结果好不好、为什么；
+3. **可进化：**失败会改变下一轮系统，而不是只被忘记。
+
+---
+
+# 6. 构建自己的 AI Harness：PM 的个人工作系统
+
+## 6.1 从一个任务开始，而不是从“搭平台”开始
+
+个人 Harness 最稳妥的建设顺序是：
+
+1. 选一个每周至少重复一次、价值明确的任务；
+2. 记录当前流程、耗时、质量和失败点；
+3. 固化项目 Brief 与术语；
+4. 把最稳定的判断步骤写成 Skill；
+5. 只连接必要工具；
+6. 建立最小 Eval；
+7. 连续运行三次，再决定是否自动化。
+
+推荐第一个任务：竞品周报、用户反馈归类、PRD 预审、项目周报、实验复盘或会议行动项，而不是一上来做“全自动产品经理”。
+
+## 6.2 个人 Harness 的最小文件集
+
+```text
+my-pm-harness/
+├── README.md                 # 目标、边界、使用方式
+├── project-brief.md          # 业务背景、用户、目标、约束
+├── glossary.md               # 术语和口径
+├── decision-log.md           # 重要决策、理由、日期、Owner
+├── AGENTS.md                 # Agent 工作规则、工具和禁区
+├── skills/
+│   ├── research/SKILL.md
+│   ├── requirement-review/SKILL.md
+│   └── prototype-acceptance/SKILL.md
+├── workflows/
+│   └── weekly-product-loop.md
+├── evals/
+│   ├── rubric.md
+│   └── golden-cases.md
+├── examples/
+│   └── sample-output.md
+└── runs/
+    └── 2026-06-20.md         # 每次执行记录、问题、改进
+```
+
+## 6.3 Skill 应该怎样写
+
+一个 Skill 至少包含：
+
+```markdown
+# Skill Name
+
+## Purpose
+这个 Skill 解决什么任务，不解决什么。
+
+## Required Inputs
+必须提供哪些资料；缺失时要停止并询问。
+
+## Procedure
+按什么步骤执行，哪些可并行，哪些必须依赖前一步。
+
+## Decision Rules
+有哪些判断标准、阈值、例外和反例。
+
+## Output Contract
+输出结构、字段和格式。
+
+## Quality Checks
+如何自检，哪些需要外部验证。
+
+## Human Gates
+什么情况下必须交给人。
+
+## Examples
+正例、反例和边界案例。
+```
+
+Anthropic 的 Agent Skills 使用文件夹组织指令、脚本和资源，并强调渐进式加载；这比把所有内容写进一个超长 Prompt 更利于维护。来源：[Anthropic Agent Skills 工程文章](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)、[Claude Skills 文档](https://docs.anthropic.com/en/docs/claude-code/skills)。
+
+## 6.4 Harness 的五条设计原则
+
+### 原则一：上下文要少而准，不要多而乱
+
+把事实、假设、历史决策分开；给每份资料标日期和 Owner；过期内容要归档。
+
+### 原则二：模型负责生成候选，人负责高代价取舍
+
+方向、用户承诺、业务冲突、隐私、品牌和上线决策不能无条件交给 Agent。
+
+### 原则三：工具权限从最小开始
+
+先只读，再写草稿，再允许低风险写操作；删除、发布、付款、外发和权限变更必须二次确认。
+
+### 原则四：每个输出都有外部验收
+
+代码用测试，数据用口径和抽样，研究用来源，原型用用户任务，策略用实验或业务指标。
+
+### 原则五：失败要进入系统，而不是只在聊天里修一次
+
+错误被分类后，应更新 Skill、上下文、工具说明、Eval 或人工闸门。
+
+## 6.5 从个人 Harness 扩展到团队 Harness
+
+| 个人阶段 | 团队阶段的升级 |
+|---|---|
+| 私人 Prompt 收藏 | 版本化 Skills，明确 Owner 和 Changelog |
+| 个人项目资料 | 结构化知识库、术语、权限和过期机制 |
+| 自己凭感觉验收 | 共享 Rubric、Golden Cases、红队样本 |
+| 手工复制工具结果 | API/MCP/工作流连接，记录 Trace |
+| 个人决定是否采用 | 业务、研发、设计、法务共同设定 Human Gates |
+| 失败后临时修 Prompt | 定期 Harness Review，分析失败分布和投资回报 |
+
+## 6.6 一项简单的团队制度建议
+
+每个 AI 工作流都要有一张“系统说明卡”：
+
+- 业务 Owner；
+- 服务对象；
+- 允许处理的数据；
+- 允许执行的动作；
+- 成功指标与反指标；
+- 人工审核点；
+- 日志位置；
+- 已知失败模式；
+- 最后审查日期；
+- 关闭/回滚方式。
+
+这会把“某同学做了个很酷的 Agent”变成可治理的组织能力。
+
+---
+
+# 7. 设计自己的 AI Loop：让工作流持续反馈和进化
+
+## 7.1 一个 Loop 是否成立，看三件事
+
+1. **现实世界是否产生了新信号。**只让模型反复改写自己的答案，不算强反馈。
+2. **是否存在独立评估。**生成者不能永远是唯一裁判。
+3. **反馈是否改变下一轮。**结果需要写入状态、规则、数据集或策略。
+
+## 7.2 四类 PM 常见 Loop
+
+### A. 用户研究 Loop
+
+```text
+新访谈/客服反馈/评论进入
+→ 自动去重与初步编码
+→ 对照已有主题和研究问题
+→ 标记新模式、矛盾、极端案例
+→ PM 审核并决定补访对象
+→ 新访谈验证
+→ 更新洞察库、Persona 假设和研究计划
+```
+
+**Evaluator：**原文可追溯性、主题覆盖、反例数量、研究问题是否被回答。  
+**Human Gate：**对用户动机的解释、隐私处理、是否改变产品方向。  
+**停止条件：**达到理论饱和或当前决策所需证据充分，而不是无限访谈。
+
+### B. PRD 迭代 Loop
+
+```text
+问题卡 + 决策进入
+→ 生成 Spec 初稿
+→ Critic 按完整性/一致性/异常/数据/权限审查
+→ 研发、设计或测试提出真实约束
+→ 修改并生成验收用例
+→ Demo/开发验证
+→ 将缺陷和变更写回 Spec 与 Skill
+```
+
+**Evaluator：**是否可测试、是否存在冲突、异常路径覆盖、未决问题是否显式。  
+**反模式：**AI 写 PRD，再让同一个会话说“这份 PRD 很好”。
+
+### C. 实验迭代 Loop
+
+```text
+业务机会
+→ 生成可证伪假设
+→ 设计最小实验与反指标
+→ 执行并采集数据
+→ 检查样本、偏差和口径
+→ 判断继续/停止/换策略
+→ 更新机会地图和下一轮实验
+```
+
+**Evaluator：**预注册指标、统计与业务显著性、护栏指标、质性解释。  
+**Human Gate：**实验伦理、用户伤害、长期价值与短期指标冲突。
+
+### D. Agent 产品体验优化 Loop
+
+```text
+真实会话 Trace
+→ 自动标注意图、工具调用、延迟、失败类型
+→ 规则 + 模型评审 + 人工抽检
+→ 识别 Top Failure Modes
+→ 更新 Prompt/Skill/Tool Schema/数据/路由
+→ 回放固定 Eval Set
+→ 小流量上线
+→ 观察真实业务结果
+```
+
+**Evaluator：**任务成功率、工具正确率、事实性、延迟、用户纠正次数、敏感动作合规。  
+**Human Gate：**高风险动作、Agent 权限、对外承诺、Eval Set 变更。  
+**Hill-climbing：**每周只针对最主要失败类型改一个系统变量，避免无法归因。
+
+## 7.3 九种可直接复用的 PM Loop
+
+| Loop | Trigger | 核心动作 | 验证信号 | 写回 |
+|---|---|---|---|---|
+| 用户反馈 Loop | 新反馈/投诉峰值 | 聚类、证据抽取、反例 | 人工抽样准确率、问题影响 | 洞察库、需求池 |
+| 需求分析 Loop | 新需求进入 | 证据检查、假设、机会评分 | 立项后返工率、验证结果 | 需求规则、反例库 |
+| PRD Loop | Spec 更新 | Critic、异常路径、测试用例 | 评审问题、缺陷、变更量 | PRD Skill、Golden Case |
+| 数据分析 Loop | 指标异常/周期报告 | SQL、自检、分群、解释候选 | 口径复核、后续验证 | 指标字典、分析模板 |
+| 实验 Loop | 新假设/实验结束 | 设计、执行、判断 | 主指标与反指标 | 实验知识库 |
+| 竞品追踪 Loop | 版本/公告/页面变化 | 抓取、差异、任务链分析 | 来源可信度、业务相关性 | 竞品时间线 |
+| 舆情 Loop | 话题/负面阈值 | 聚类、传播链、风险分级 | 人工复核、事件走向 | 响应策略和词典 |
+| Agent 体验 Loop | 新 Trace/失败阈值 | 归因、回放、Harness 更新 | Eval + 线上业务结果 | Prompt/Skill/Tool/Eval |
+| Hackathon Demo Loop | 每次里程碑/排练 | 构建、测试、观众反馈 | 任务成功、演示时长、理解度 | Scope、脚本、备份方案 |
+
+## 7.4 Human-in-the-loop 的四种级别
+
+| 级别 | 人的角色 | 适用场景 |
+|---|---|---|
+| H0：事后抽检 | 系统自动运行，人看样本和指标 | 低风险、可回滚、Eval 稳定的归类/摘要 |
+| H1：输出审核 | AI 生成草稿，人确认后采用 | PRD、分析结论、对外内容 |
+| H2：动作审批 | AI 可规划，但关键写操作前必须批准 | 发消息、修改业务配置、发布、调用敏感数据 |
+| H3：共同决策 | AI 提供候选与证据，人做最终取舍 | 产品方向、商业条款、用户权益、重大风险 |
+
+“Human-in-the-loop”不意味着每一步都要人点确认。真正的设计问题是：**把人放在信息增益最大、错误代价最高的节点。**
+
+## 7.5 Loop 的七个反模式
+
+1. **没有独立现实信号：**模型只在自己的文本里循环。
+2. **奖励指标错误：**系统优化点击，却损害信任或长期留存。
+3. **生成者兼唯一裁判：**错误被自我确认。
+4. **没有状态：**每轮忘记之前发生了什么。
+5. **没有预算和停止条件：**无限搜索、无限重试、成本失控。
+6. **错误自动放大：**低质量输出直接成为下一轮训练/知识输入。
+7. **没有 Owner：**系统出错时所有人都说“是模型决定的”。
+
+## 7.6 Loop Engineering 的最小交付物
+
+设计 Loop 时，不需要先写复杂代码。先交付这六项：
+
+1. 一张 Loop Canvas；
+2. 一张状态机图；
+3. 10–30 个 Golden Cases；
+4. 一个 Eval Rubric；
+5. 一份 Human Gate / Stop / Escalation 表；
+6. 一份运行与变更日志。
+
+这比“做一个看起来很聪明的 Agent”更接近生产级产品设计。
+
+---
+
+# 8. PM 日常工作流重构：从调研到汇报
+
+## 8.1 总体原则
+
+对于每个工作场景，可以用四级成熟度判断：
+
+```text
+传统做法：人手工完成全部步骤
+AI 辅助：AI 加速某一个节点
+Harness：上下文、Skill、工具和评估可复用
+Loop：现实结果持续触发下一轮改进
+```
+
+下面的建议不是要求一次做到最高级。先让一条流程**可复现、可验证**，再自动化。
+
+## 8.2 十五类 PM 工作流
+
+### 1. 用户研究
+
+- **传统做法：**招募、访谈、手工转写、读笔记、凭经验归纳。
+- **AI 辅助：**转写、摘要、自动生成访谈提纲和主题。
+- **Harness 做法：**维护研究问题、用户分层、编码规范、证据等级和隐私规则；Skill 要求每个洞察回链原文并主动找反例。
+- **Loop 做法：**新访谈进入后与已有主题对比，发现证据空白，自动建议下一轮样本与问题；PM 决定是否继续研究。
+- **工具组合：**会议转写/录音合规工具 → NotebookLM/Claude/ChatGPT → 研究仓库 → 表格或知识图谱。
+- **产出：**洞察卡、证据片段、矛盾点、机会假设、下一轮研究计划。
+- **PM 必须判断：**研究问题、样本偏差、动机解释、优先级、伦理与隐私。
+
+### 2. 竞品分析
+
+- **传统做法：**截图、功能清单、偶发体验、年更 PPT。
+- **AI 辅助：**搜索和汇总新功能。
+- **Harness 做法：**以用户任务为对比单位，指定一手来源、时间戳、证据链接、固定观察维度和事实/推断分离规则。
+- **Loop 做法：**版本公告、页面或舆情变化触发差异分析；只有影响关键任务链的变化才进入 PM 提醒。
+- **工具组合：**Deep Research/Perplexity/Genspark + 浏览器自动化 + Git/数据库 + NotebookLM。
+- **产出：**竞品任务链、策略差异、时间线、机会/风险卡。
+- **PM 必须判断：**哪些差异真正影响用户价值，哪些能力受对方资源禀赋影响而不可照搬。
+
+### 3. 需求分析
+
+- **传统做法：**收需求、开会、凭经验排优先级。
+- **AI 辅助：**整理需求和生成方案。
+- **Harness 做法：**统一问题卡，要求证据、用户任务、当前替代方案、假设、目标与反指标；用 Opportunity Score Skill 预筛。
+- **Loop 做法：**上线后的采用、缺陷、投诉和收益回流到需求判断规则，校准过去的优先级偏差。
+- **工具组合：**项目管理系统 + AI Critic + 数据查询 + Decision Log。
+- **产出：**问题卡、证据包、假设列表、最小验证建议。
+- **PM 必须判断：**是否值得做、战略一致性、机会成本、利益相关者冲突。
+
+### 4. 产品方案
+
+- **传统做法：**PM 单方案推进，再在评审中补洞。
+- **AI 辅助：**生成多个方案和优缺点。
+- **Harness 做法：**要求每个方案明确用户路径、系统状态、约束、失败模式、实施成本和验证计划；用不同 Critic 分别审查体验、商业、技术和风险。
+- **Loop 做法：**小样验证和实验结果持续淘汰错误假设，方案空间逐轮收敛。
+- **工具组合：**Canvas/Artifacts + Mermaid + 原型 Builder + 决策矩阵。
+- **产出：**备选方案、Trade-off、状态图、可运行切片、决策 Memo。
+- **PM 必须判断：**取舍、产品原则、长期一致性、可接受风险。
+
+### 5. PRD 写作
+
+- **传统做法：**从空白文档开始，篇幅代表完整。
+- **AI 辅助：**按模板生成 PRD。
+- **Harness 做法：**输入仅使用已确认的决策；Skill 检查触发、状态、异常、权限、数据、埋点、验收和非目标；未决问题不得被模型补写成事实。
+- **Loop 做法：**评审问题、测试缺陷和线上变更回流为 PRD Eval 和新反例。
+- **工具组合：**项目 Brief + PRD Skill + Critic Agent + Git/文档版本。
+- **产出：**可测试 Spec、状态机、验收用例、未决问题列表。
+- **PM 必须判断：**需求边界、体验原则、冲突处理、承诺和优先级。
+
+### 6. 原型设计
+
+- **传统做法：**画低保真或排设计资源，静态图难验证动态逻辑。
+- **AI 辅助：**生成界面图和文案。
+- **Harness 做法：**用设计原则、组件规范、目标任务、数据样例和验收脚本约束 Replit/Lovable/v0/Cursor/Comate。
+- **Loop 做法：**每次用户测试产生任务完成率、卡点和误解，自动形成 Issue，再更新 Demo。
+- **工具组合：**Figma/Claude Design/v0 → Replit/Lovable/Cursor/Comate → GitHub。
+- **产出：**可点击 HTML、交互 Demo、录屏和用户测试脚本。
+- **PM 必须判断：**核心体验、信息架构、现实可行性、是否证明了关键假设。
+
+### 7. 数据分析
+
+- **传统做法：**提数排队、Excel 手工分析、口径反复沟通。
+- **AI 辅助：**生成 SQL、图表和解释。
+- **Harness 做法：**指标字典、数据血缘、权限、SQL 模板和自检查询；强制分离数据事实、相关性和因果推断。
+- **Loop 做法：**指标异常自动触发诊断树；验证后的原因和查询被写回知识库。
+- **工具组合：**受控 SQL Agent + Notebook/Python + BI + 数据质量检查。
+- **产出：**可复现查询、图表、异常解释候选、决策建议。
+- **PM 必须判断：**口径、分母、偏差、因果解释、业务意义。
+
+### 8. 策略实验
+
+- **传统做法：**先做功能，再看数据；成功指标事后解释。
+- **AI 辅助：**生成实验想法和指标。
+- **Harness 做法：**假设、目标人群、最小干预、主指标、反指标、样本和停止条件模板化。
+- **Loop 做法：**实验结果进入机会模型，自动推荐继续、放大、停止或换假设，但由 PM 批准。
+- **工具组合：**实验平台 + 分析 Agent + Decision Log。
+- **产出：**实验协议、结果 Memo、下一轮假设。
+- **PM 必须判断：**实验伦理、长期影响、业务显著性、是否值得规模化。
+
+### 9. 项目协同
+
+- **传统做法：**会议、群聊、手工催办、信息散落。
+- **AI 辅助：**会议纪要和行动项。
+- **Harness 做法：**统一项目目标、里程碑、角色、依赖和风险字段；AI 只从有权限的系统读取并生成变更摘要。
+- **Loop 做法：**状态变更、延期和依赖阻塞触发风险分析与 Owner 提醒；重大变更需人工确认。
+- **工具组合：**飞书/钉钉/项目管理 + Agent + Calendar/Webhook。
+- **产出：**状态板、风险清单、决策日志、行动项。
+- **PM 必须判断：**优先级冲突、资源取舍、组织沟通和责任分配。
+
+### 10. 复盘总结
+
+- **传统做法：**事后回忆、事件流水账、行动项无人跟。
+- **AI 辅助：**总结会议和材料。
+- **Harness 做法：**以预期—实际—差距—机制—行动为固定结构，自动汇集数据、Issue、决策和时间线。
+- **Loop 做法：**复盘行动项被持续追踪；下次同类项目启动时自动提醒历史失败模式。
+- **工具组合：**项目日志 + 数据 + Retro Skill + 任务系统。
+- **产出：**机制性结论、Owner/截止时间/验证方式、Harness 更新项。
+- **PM 必须判断：**因果归因、责任边界、哪些经验可泛化。
+
+### 11. 汇报表达
+
+- **传统做法：**堆材料、追求页数和美观。
+- **AI 辅助：**生成 PPT 文案和视觉。
+- **Harness 做法：**先确定受众决策、核心论点、证据和 Call to Action；来源审计与反方审稿成为固定步骤。
+- **Loop 做法：**排练反馈、现场问题和决策结果回流到叙事模板。
+- **工具组合：**Markdown/Canvas → Slidev/Gamma/Claude Design → 演讲排练 Agent。
+- **产出：**一页叙事骨架、Slides、Speaker Notes、Q&A 预案。
+- **PM 必须判断：**真正希望听众相信和行动什么，哪些信息该删。
+
+### 12. 个人知识管理
+
+- **传统做法：**收藏很多、很少复用。
+- **AI 辅助：**自动摘要和标签。
+- **Harness 做法：**围绕项目与决策组织，不按“资料类型”堆积；每条知识有来源、日期、可信度和适用边界。
+- **Loop 做法：**新任务会检索相关历史，任务结束后自动建议更新知识、归档过期内容。
+- **工具组合：**Projects/NotebookLM/Obsidian/GitHub + 搜索/向量索引。
+- **产出：**项目 Brief、术语、决策日志、Evidence Map、Skill。
+- **PM 必须判断：**什么值得长期保存，哪些内容已经失效。
+
+### 13. AI Agent 产品设计
+
+- **传统做法：**按页面和功能写需求。
+- **AI 辅助：**生成 Prompt 和对话。
+- **Harness 做法：**定义 Intent、Tool Schema、状态、Memory、权限、Guardrails、Eval Set、Trace 和降级。
+- **Loop 做法：**真实会话失败持续更新路由、工具、知识、Prompt 和评测。
+- **工具组合：**Dify/LangGraph/OpenAI Agents SDK + MCP/API + Tracing/Evals。
+- **产出：**Agent Spec、工具契约、状态图、Eval 数据集、运营 Dashboard。
+- **PM 必须判断：**Agent 是否该行动、风险边界、用户控制、目标冲突和责任。
+
+### 14. ToB / 生态合作方案
+
+- **传统做法：**PPT、需求对接表、长周期拉齐。
+- **AI 辅助：**生成合作方案和会议纪要。
+- **Harness 做法：**维护伙伴画像、能力矩阵、接口、数据/合规边界、商业条款和历史决策；不同 Agent 评估产品、技术、商务与风险。
+- **Loop 做法：**里程碑、接口变更、上线效果和 Partner Feedback 自动更新合作健康度。
+- **工具组合：**知识库 + Decision Matrix + API Spec + 项目 Agent。
+- **产出：**合作 One-pager、能力/责任边界、接口清单、商业模型、风险表。
+- **PM 必须判断：**战略价值、议价与交换、承诺边界、关系管理。
+
+### 15. 商业测算
+
+- **传统做法：**单点估算、假设隐含在 Excel 里。
+- **AI 辅助：**生成模型和情景分析。
+- **Harness 做法：**统一收入/成本/转化/留存口径，要求所有假设标来源和置信度，自动生成敏感性分析。
+- **Loop 做法：**真实业务数据周期性替换假设，并提示偏差最大项和是否需要调整策略。
+- **工具组合：**Spreadsheet/Python + 数据连接 + Scenario Skill。
+- **产出：**Base/Upside/Downside 模型、关键敏感项、决策阈值。
+- **PM 必须判断：**假设合理性、战略期权、不可量化价值和风险偏好。
+
+## 8.3 一条通用 PM Workflow
+
+可以把以上十五类工作抽象为一条通用链路：
+
+```text
+Signal
+  ↓
+Research（事实与证据）
+  ↓
+Frame（问题、目标、约束）
+  ↓
+Options（备选与取舍）
+  ↓
+Build（原型或最小实施）
+  ↓
+Evaluate（用户、数据、测试）
+  ↓
+Decide（继续、停止、换方向）
+  ↓
+Learn（更新知识、Skill、Eval）
+  ↺
+```
+
+AI 可以参与每一步，但 PM 必须拥有目标、证据标准和最终决定。
+
+---
+# 9. PM 为什么必须成为 Builder
+
+## 9.1 Builder 不是“PM 改行写代码”
+
+这里的 Builder 指的是：
+
+> **能够把问题、假设和产品判断快速转成可体验、可运行、可测试的证据，并理解它怎样连接真实数据、工具和反馈。**
+
+它不要求每个 PM 独立承担生产系统研发，也不取消设计、研发和测试的专业价值。相反，它让 PM 更早暴露问题、更准确地与专业团队协作。
+
+## 9.2 为什么可运行原型比 PPT 更重要
+
+### 1. Demo 会迫使模糊问题变具体
+
+“智能推荐”“一站式体验”“个性化 Agent”在 PPT 里都成立；一旦做 Demo，就必须回答：
+
+- 用户第一句话是什么？
+- Agent 需要哪些数据？
+- 调用什么工具？
+- 缺信息时问什么？
+- 错误时怎样恢复？
+- 哪一步必须确认？
+- 完成后用户如何判断成功？
+
+### 2. Demo 是跨职能沟通的压缩协议
+
+可运行原型让产品、设计、研发、业务和管理层围绕同一对象讨论。很多评审争议不是观点冲突，而是每个人脑中想象的产品不同。
+
+### 3. Demo 会提前暴露“魔法步骤”
+
+PPT 中最容易被一句“系统自动完成”掩盖的地方，往往正是产品最难的环节：数据、权限、接口、异常、延迟、成本和人工运营。
+
+### 4. AI 已把原型成本压低
+
+Replit Agent、Lovable、v0、Cursor、Claude Code、Comate、Codex 等工具让自然语言到可运行产品的距离显著缩短。Replit Agent 4甚至把多任务并行、设计画布和工作区指令放进同一环境；Replit 的产品材料引用 PM 的实践表达“show, not tell”，非常符合 Builder PM 的价值。来源：[Replit Agent 4](https://replit.com/agent4)、[Replit Agent 文档](https://docs.replit.com/references/agent/overview)。
+
+## 9.3 Builder 能力改变 PM 的协作方式
+
+| 传统协作 | Builder PM 的协作 |
+|---|---|
+| PM 先写完整需求，再交给设计研发 | PM 用可运行纵向切片提前共创 |
+| 争论想法是否可行 | 直接测试关键假设和接口 |
+| 研发承担所有技术探索 | PM 能理解 API、状态、数据与风险，减少翻译损耗 |
+| 设计稿完成后才看到动态逻辑 | 原型阶段就验证交互、延迟和异常 |
+| 管理层依赖抽象叙事 | 用用户任务和真实 Demo 形成共同判断 |
+| 需求变更主要靠文档同步 | Spec、代码、Issue 和 Eval 在同一仓库演进 |
+
+## 9.4 PM 需要掌握到什么技术程度
+
+最低目标不是“能写所有代码”，而是：
+
+- 看懂基本 HTML/CSS/JavaScript 结构；
+- 会使用 Git/GitHub 保存版本和回滚；
+- 能看懂 API 请求、响应、鉴权和错误；
+- 会用 JSON 表达结构化数据；
+- 能用 SQL/Python 完成基础分析与数据处理；
+- 能给 Coding Agent写清 Spec、文件边界和验收标准；
+- 能运行本地项目、看日志、复制错误并引导修复；
+- 理解 Agent 的工具、状态、Memory、Eval、权限和 Human Gate；
+- 知道 Demo、灰度和生产上线之间差什么。
+
+## 9.5 PM Builder 能力阶梯
+
+| 级别 | 能力 | 可见产物 | 通过标准 |
+|---|---|---|---|
+| 1 | 能写清楚问题 | 一页 Problem Brief | 有用户、证据、目标、约束、非目标 |
+| 2 | 能画流程 | 用户旅程/状态图 | 覆盖主流程与关键异常 |
+| 3 | 能做 Prompt | 结构化任务模板 | 输出可复现，知道怎样核验 |
+| 4 | 能做低保真原型 | 线框/点击稿 | 可完成一个核心任务 |
+| 5 | 能生成 HTML Demo | 浏览器可运行页面 | 有真实交互与状态，不只是截图 |
+| 6 | 能用 Cursor/Claude Code/Comate 改代码 | Git Commit | 能定位文件、运行、调试、回滚 |
+| 7 | 能调用 API | 真实数据/工具连接 | 能处理鉴权、Loading、错误与空状态 |
+| 8 | 能做简单 Agent | 单 Agent + 工具 | 有明确任务、Tool Schema、状态与停止 |
+| 9 | 能接入数据和反馈 | Eval/监控 Dashboard | 能识别失败类型并验证改进 |
+| 10 | 能把 Demo 变成项目起点 | Spec + Repo + Eval + Roadmap | 团队可以基于它继续开发而非推倒重来 |
+
+## 9.6 非技术 PM 的四周 Builder 路线
+
+### 第 1 周：从 Markdown 到网页
+
+- 用 AI 写一个单页 HTML；
+- 理解结构、样式、事件和浏览器控制台；
+- 把页面放到 GitHub；
+- 完成一个“输入—处理—输出”的交互。
+
+### 第 2 周：从页面到数据
+
+- 调用一个安全的公开 API 或 Mock API；
+- 处理 Loading、成功、失败和空状态；
+- 学会读取 JSON；
+- 加入本地存储或简单状态。
+
+### 第 3 周：从数据到 Agent
+
+- 定义一个单一任务 Agent；
+- 设计 2–3 个工具；
+- 明确权限、确认和停止条件；
+- 建立 10 个测试用例。
+
+### 第 4 周：从 Demo 到 Loop
+
+- 收集 5–8 次真实任务测试；
+- 给失败分类；
+- 更新 Prompt/Skill/工具；
+- 建立一张最小 Dashboard；
+- 写出是否继续投入的 Decision Memo。
+
+## 9.7 一个可运行 Demo 的验收清单
+
+- [ ] 30 秒内能看懂要解决什么问题；
+- [ ] 2 分钟内能完成核心用户任务；
+- [ ] 使用接近真实的数据和约束；
+- [ ] 至少处理一个错误或异常状态；
+- [ ] 关键 AI 行为可解释或可回看；
+- [ ] 敏感动作有确认；
+- [ ] 有固定的演示数据和离线备份；
+- [ ] 明确 Demo 证明了什么、没有证明什么；
+- [ ] Repo 中有 README、运行方式和已知问题；
+- [ ] 有下一步真实验证，而不是“继续完善功能”。
+
+## 9.8 适合本段的演讲金句
+
+- “Demo 不是缩小版产品，而是最短的证据链。”
+- “Builder PM 不替代研发，而是减少产品判断与现实之间的翻译损耗。”
+- “当生成代码越来越便宜，定义正确边界、验证真实结果会越来越贵。”
+- “可运行原型不是交付的终点，而是高质量协作的起点。”
+
+---
+
+# 10. Hackathon：PM 成为 Builder 的最佳训练场
+
+## 10.1 为什么 Hackathon 特别适合 PM
+
+Hackathon 把正常项目中被拉长、被流程遮蔽的核心能力压缩到 24–48 小时：
+
+- 问题是否真实；
+- AI 是否必要；
+- 范围能否被压缩；
+- 团队能否快速形成共同模型；
+- Demo 是否能跑；
+- 证据是否足够；
+- 故事是否让评委立刻理解。
+
+对 PM 来说，它不是“技术同学写代码、PM 做 PPT”的比赛，而是一场产品责任训练。PM 的核心职责是让团队始终围绕**价值证据和最短成功路径**工作。
+
+## 10.2 可放入分享的个人叙事骨架
+
+> 这部分必须由分享人用真实经历替换。
+
+1. **出发前的期待：**[为什么参加 SuperAI NEXT？想验证哪项能力？]
+2. **第一次现实碰撞：**[MemoryCare 的最初想法在哪个环节被挑战？]
+3. **关键取舍：**[团队删掉了什么？保留了哪条 Demo Spine？]
+4. **从 PM 到 Builder 的瞬间：**[你亲自搭了什么、调了什么、验证了什么？]
+5. **失败或意外：**[一次工具、数据、Demo 或协作问题]
+6. **最后五分钟：**[评委真正记住了什么？]
+7. **回来后的改变：**[你准备怎样改变日常 PM 工作？]
+
+不要把故事写成“我们通宵、很拼”。更有价值的是讲：**在高压与不确定中，你如何做了一次产品判断。**
+
+## 10.3 Hackathon 的五条核心原则
+
+### 原则一：Problem First，但必须 Demo-able
+
+选题不仅要重要，还要能在有限时间里形成可见证据。一个宏大社会问题，如果 36 小时内只能做 PPT，就不是好 Hackathon 题。
+
+### 原则二：先确定 Demo Spine，再分工
+
+Demo Spine 是演示中从用户问题到价值结果的最短主线：
+
+```text
+真实场景 → 一个关键输入 → AI 的必要动作 → 可见结果 → 为什么更好
+```
+
+所有功能都必须服务这条主线。
+
+### 原则三：优先烧掉最大风险
+
+第一小时不要先做 Logo 和 Landing Page。先验证最可能让项目失败的事情：模型能否完成核心推理、API 是否能用、数据是否可得、延迟是否可接受。
+
+### 原则四：纵向切片，而不是横向堆功能
+
+做一个从前台到后台、从输入到输出都跑通的核心任务，比做五个不能闭环的页面更有说服力。
+
+### 原则五：每三小时都要有可演示版本
+
+GitHub、测试数据、演示脚本和备份视频要持续更新。最后一小时不再增加功能，只做稳定性、叙事和应急。
+
+## 10.4 选题判断框架：I-D-E-A-S
+
+对候选题按 1–5 分评分：
+
+| 维度 | 问题 |
+|---|---|
+| **I — Impact** | 问题是否高频、痛、真实，解决后价值是否明显？ |
+| **D — Demoability** | 2–3 分钟内能否看见从输入到结果？ |
+| **E — Essential AI** | AI 是否不可替代，而不是给普通功能加聊天框？ |
+| **A — Access** | 数据、API、模型、设备和权限是否可获得？ |
+| **S — Squad Fit** | 团队能力、赛道和时间是否匹配？ |
+
+再除以两个风险项：
+
+```text
+选题优先级 ≈ Impact × Demoability × Essential AI × Access × Squad Fit
+              ÷（集成风险 × 依赖数量）
+```
+
+### 好题目的特征
+
+- 用户与场景具体；
+- 输入与输出可展示；
+- AI 处理了过去难以规模化的认知任务；
+- 有一项真实数据、工具调用或环境反馈；
+- Demo 能显示前后差异；
+- 即使部分接口失败，也有可降级的核心体验。
+
+## 10.5 组队与职责模板
+
+4–6 人团队可采用以下角色，每人可兼任：
+
+| 角色 | 主要职责 | PM 是否可承担 |
+|---|---|---|
+| Product/Loop Owner | 问题、范围、指标、Demo Spine、取舍 | **必须承担** |
+| AI/Backend Builder | 模型、工具、API、状态、数据 | 可与 AI 协同完成部分 |
+| Frontend/Prototype Builder | 界面、交互、演示稳定性 | PM 应至少能共同搭建 |
+| Design/Story Owner | 用户旅程、视觉、Pitch | PM 可承担，但不能只做此项 |
+| Eval/QA Owner | 测试集、失败分类、回归、备份 | PM 很适合承担 |
+| Domain/Business Owner | 领域事实、数据、市场和商业 | PM 可承担 |
+
+### PM 的职责清单
+
+- [ ] 用一句话定义用户、痛点和结果；
+- [ ] 确认 AI 的必要性；
+- [ ] 定义 Demo Spine 与非目标；
+- [ ] 把评审标准转成开发优先级；
+- [ ] 每三小时做一次 Scope Review；
+- [ ] 建立 10–20 个测试任务；
+- [ ] 亲自参与原型、Prompt、数据或 Agent 搭建；
+- [ ] 维护 Decision Log；
+- [ ] 组织至少三次完整排练；
+- [ ] 准备失败时的降级与视频备份；
+- [ ] 明确 Demo 证明和未证明的内容。
+
+## 10.6 开赛前准备清单
+
+### 业务与选题
+
+- [ ] 3 个候选问题，每个都有真实用户证据；
+- [ ] 主办方赛题、规则、评分维度和提交格式已读；
+- [ ] 已确认不可使用的数据、素材和已有代码边界；
+- [ ] 初步完成竞品和替代方案研究；
+- [ ] 每个选题都有 2 分钟 Demo 假想脚本。
+
+### 技术与工具
+
+- [ ] GitHub 组织、仓库、分支与权限；
+- [ ] 环境变量示例与密钥管理；
+- [ ] 模型/API 额度与备用方案；
+- [ ] 前端/Agent Starter 可运行；
+- [ ] Mock 数据与固定演示账号；
+- [ ] 部署平台和域名；
+- [ ] 录屏、截图和离线视频工具。
+
+### 团队
+
+- [ ] 角色、时区、联系方式和决策人；
+- [ ] 每人说明最强能力和最弱依赖；
+- [ ] 建立“谁都可以删功能，但只有 Owner 能加功能”的规则；
+- [ ] 约定 Commit、Issue、文档和沟通方式；
+- [ ] 安排睡眠与轮班，避免最后阶段集体失能。
+
+## 10.7 24 小时时间表
+
+| 时间 | 目标 | 必须产出 |
+|---|---|---|
+| 0:00–1:00 | 读规则、定题、确定 Demo Spine | 一页 Brief、评分映射、非目标 |
+| 1:00–3:00 | 验证最大技术/数据风险 | Spike 结果、Go/No-go 决定 |
+| 3:00–6:00 | 搭纵向最小切片 | 输入→AI→结果第一次跑通 |
+| 6:00–9:00 | 完成核心体验和测试集 | 可点击版本、10 个测试任务 |
+| 9:00–12:00 | 接真实数据/API，处理失败 | V0.5 Demo、错误状态 |
+| 12:00–15:00 | 用户/队友测试，收敛范围 | Top 问题、删减清单 |
+| 15:00–18:00 | 稳定 Demo，补可见价值 | V0.8、核心指标/前后对比 |
+| 18:00–21:00 | Pitch、视频和提交材料 | 7 页 Pitch、README、录屏 |
+| 21:00–23:00 | 三轮完整排练和故障演练 | 计时脚本、备用路径 |
+| 23:00–24:00 | 冻结功能、提交、缓冲 | 最终链接、离线备份 |
+
+## 10.8 48 小时时间表
+
+| 阶段 | 时间 | 核心目标 |
+|---|---|---|
+| Discover | 0–4h | 定题、证据、评审标准、风险 Spike |
+| Frame | 4–8h | 用户旅程、架构、Demo Spine、测试集 |
+| Build V0 | 8–16h | 纵向切片跑通，不追求美观 |
+| Build V1 | 16–24h | 真实接口、核心体验、异常路径 |
+| Validate | 24–30h | 目标用户/评委视角测试、失败归类 |
+| Improve | 30–36h | 只修高影响问题，加入可见证据 |
+| Package | 36–42h | Pitch、README、视频、提交材料 |
+| Rehearse | 42–46h | 计时、Q&A、网络/接口故障演练 |
+| Freeze | 46–48h | 停止加功能、提交和休息 |
+
+SuperAI NEXT 的 36 小时赛制可以把上述 48 小时计划压缩为：前 6 小时完成问题和风险验证，18 小时前跑通纵向切片，24 小时后冻结范围，最后 6–8 小时只做稳定、叙事、提交和排练。
+
+## 10.9 Hackathon AI 工具使用清单
+
+| 任务 | 推荐工具类别 | 注意点 |
+|---|---|---|
+| 赛题/行业研究 | Deep Research、Perplexity、Genspark | 只保留能改变选题的证据；记录来源 |
+| 用户与竞品 | NotebookLM、Web Research | 不虚构用户数据；竞品按任务链比较 |
+| 架构与流程 | Mermaid、Excalidraw、Claude/ChatGPT | 先画状态和失败，再写代码 |
+| UI/前端 | v0、Lovable、Replit、Cursor、Comate | 使用固定组件和样例数据；避免无意义精修 |
+| Agent/Workflow | Dify、Coze、LangGraph、OpenAI Agents SDK | 单 Agent 优先；工具少而清晰 |
+| 编码与调试 | Claude Code、Cursor、Comate、Codex、Windsurf | 小 Commit；每次改动后跑回归 |
+| 数据与分析 | Python/Notebook、SQL Agent | 检查口径和样本；不要编造指标 |
+| Pitch/视觉 | Slidev、Gamma、Claude Design、Napkin | 先写叙事，后生成版式 |
+| 测试与评估 | Eval Script、表格、LLM Judge + 人工 | 不能只让生成模型自评 |
+| 录屏与备份 | 本地录屏、固定视频 | 所有外部 API 都应有备用路径 |
+
+## 10.10 Demo 构建路线
+
+```text
+Problem Brief
+    ↓
+Demo Spine（只保留一个关键任务）
+    ↓
+最大风险 Spike
+    ↓
+Mock 数据纵向切片
+    ↓
+真实模型/API
+    ↓
+10–20 个 Eval Cases
+    ↓
+用户/队友测试
+    ↓
+冻结 Scope
+    ↓
+Pitch + 备份视频
+```
+
+### Demo 的三层真实性
+
+1. **体验真实：**用户真的可以完成任务；
+2. **系统真实：**核心 AI/工具调用真的发生，不用 Wizard-of-Oz 冒充全部能力；
+3. **证据真实：**明确说明哪些是 Mock、哪些是生产可行性假设。
+
+## 10.11 Pitch Deck 模板：7 页足够
+
+1. **Hook：**一个具体用户和高痛场景；
+2. **Problem：**今天为什么失败，用一个事实或故事证明；
+3. **Insight：**为什么现在能用 AI 以不同方式解决；
+4. **Demo：**尽早进入现场演示；
+5. **How it works：**一张架构/Loop 图，突出 AI 的必要性；
+6. **Evidence & Impact：**测试结果、前后对比、可扩展价值；
+7. **Next：**下一步真实验证、商业/社会价值与团队请求。
+
+MLH 的通用评审建议把每个项目的评审压缩在数分钟内，并强调现场 Demo 与简短问答；Devpost也建议评分标准应在赛前与参与者对齐。来源：[MLH Judging Plan](https://guide.mlh.io/general-information/judging-and-submissions/judging-plan)、[Devpost Judging](https://help.devpost.com/article/103-how-to-judge-an-online-hackathon)。
+
+## 10.12 评委视角评分表
+
+| 维度 | 权重 | 5 分标准 |
+|---|---:|---|
+| 问题与用户价值 | 20% | 真实、具体、高痛，有证据且结果明显 |
+| AI 必要性与创新 | 20% | AI 完成传统方法难以完成的认知/行动任务，不是贴标签 |
+| 可运行程度 | 20% | 主链路现场稳定运行，核心能力真实 |
+| 产品与体验 | 15% | 用户任务清楚，交互、异常与信任设计完整 |
+| 技术与执行 | 10% | 架构合理、范围控制好、能解释关键取舍 |
+| 影响与可扩展性 | 10% | 下一步验证、成本和落地路径可信 |
+| Pitch 与团队 | 5% | 叙事简洁、分工清晰、问答诚实 |
+
+**反向扣分：**只做 PPT、虚构数据、AI 非必要、Demo 依赖手工暗箱、无法解释隐私/权限、功能很多但核心任务没跑通。
+
+## 10.13 Hackathon 风险清单
+
+| 风险 | 早期信号 | 应对 |
+|---|---|---|
+| 选题过大 | 一句话说不清用户和结果 | 限定一个人、一个场景、一个任务 |
+| AI 只是装饰 | 去掉 AI 体验几乎不变 | 重新找不可规模化的认知任务 |
+| 接口不可用 | 前 3 小时还没测试 | 先 Spike；准备 Mock/备用模型 |
+| 多 Agent 过度设计 | Agent 互相转发但无新信息 | 回到单 Agent + 明确工具 |
+| Scope 膨胀 | 不断出现“顺便加一个” | 设置功能冻结点和非目标 |
+| Demo 不稳定 | 每次输入结果差异大 | 固定演示数据、缓存、回放与视频 |
+| 没有 Eval | 只能说“感觉不错” | 立即建立 10–20 个任务和评分表 |
+| PM 只做 Pitch | 对系统无法解释 | 强制承担一个构建或 Eval 模块 |
+| 最后才整合 | 各模块单独运行 | 每 3 小时合并和演示一次 |
+| 叙事太晚 | Demo 做完才想讲什么 | 开赛第 1 小时写 2 分钟脚本 |
+
+## 10.14 面向百度地图 / 小度想想 / AI Agent 的内部选题建议
+
+> 以下是启发性方向，需结合内部战略、数据权限和已有项目去重。
+
+### 1. OS × Map Intent Router
+
+用户在系统级 Agent 中表达复杂出行意图，系统把任务拆成地图检索、路线、到店服务和提醒；Demo 重点展示动作契约、权限确认与失败回退。
+
+### 2. 城市突发事件出行 Agent
+
+结合天气、交通、活动与公共信息，在路线受影响时主动重规划并解释原因；重点验证事件触发 Loop 和用户控制。
+
+### 3. 无障碍/银发出行 Copilot
+
+基于步行距离、电梯、坡度、休息点、医院和家属联系等约束提供路线与陪伴提示；可与 MemoryCare 经验形成个人叙事，但不得假设既有项目功能。
+
+### 4. 本地生活“决策而非搜索”Agent
+
+面向“带父母、时间有限、预算明确、交通约束”等复合任务，完成候选生成、解释、路线和行动计划；验证从 POI 列表到任务完成的迁移。
+
+### 5. 商家内容可信度巡检 Agent
+
+对营业时间、菜单、价格、图片、评论与外部来源做冲突发现，给出证据等级和人工核验优先级；核心是数据质量 Loop，不是自动改数据。
+
+### 6. 商家入驻/经营 Copilot
+
+把商家资料准备、内容质量、活动建议和问题诊断做成分步 Agent；结果用资料完整率、问题解决和真实经营反馈验证。
+
+### 7. 周末微旅行 Builder
+
+用户输入时间、同行人、偏好和起终点，Agent 生成可编辑路线，并根据实时变化重排；Demo 要展示状态和约束，而不只是生成文案。
+
+### 8. Agent Experience Replay Lab
+
+把真实或脱敏的 Agent Trace 可视化，自动分类意图、工具、延迟和失败，并支持回放 Eval；这是面向内部 Agent PM 的基础设施型题目。
+
+## 10.15 如何把 Hackathon 变成组织训练机制
+
+1. 赛前开放 Starter、Skills、Mock 数据和 Eval 模板；
+2. 赛题按真实业务问题设计，不以“使用某模型”代替问题；
+3. 评审同时看 Demo、证据、系统设计与风险；
+4. 每队提交 Repo、README、Demo 视频、Eval 和 Decision Log；
+5. 赛后两周设置“验证 Sprint”，只支持有明确下一步证据的项目；
+6. 把优秀 Skill、Connector、Eval 和组件合并进公共工具包；
+7. 把失败模式写成案例库，让下一届少踩一次同样的坑。
+
+Hackathon 最有价值的产物不一定是获奖项目，而是**一批会定义问题、会搭 Demo、会用反馈迭代的 Builder PM，以及一套可复用的组织 Harness。**
+
+---
+# 11. GitHub 开源工具包：AI-Native PM Kit
+
+## 11.0 当前仓库实态：`rainnochen/ai_native_pm_sharing`
+
+本次分享对应的公开仓库建议统一使用：
+
+- GitHub 仓库：`rainnochen/ai_native_pm_sharing`
+- 产品化名称：**AI Native PM Kit**
+- 副标题：**Harnesses, Loops, Skills and Builder Starters for Product Managers**
+- 中文定位：面向产品经理的 AI Harness、Loop、Skills 与 Builder 启动套件。
+
+这个仓库不是单纯的 Prompt 合集，而是把本次分享里的方法论落成可复制资产：
+
+| 模块 | 当前内容 | 对 PM 的价值 |
+|---|---|---|
+| `00-quickstart/` | `10-minute-start.md` | 让 PM 用 10 分钟跑通第一个真实 AI 工作流 |
+| `context/` | Project Brief、Glossary、Decision Log | 给 AI 提供可控上下文，避免每次从零开始 |
+| `skills/` | Requirement Review、PRD Critic、Prototype Acceptance 等 | 把 PM 经验沉淀成可复用能力，而不是散落在聊天记录里 |
+| `harness/` | Personal PM Harness、Human Gates、Quality Contract | 定义 AI 可以看到什么、做什么、何时必须停下来找人 |
+| `loops/` | PM Loop Canvas、PRD Loop、User Feedback Loop、Experiment Loop、Agent Experience Loop | 把用户、数据、竞品和实验信号接入持续反馈闭环 |
+| `hackathon-kit/` | Preflight、Team Charter、Problem One-Pager、Demo Spine、Rubric、Risk、Eval、Decision Log、Backup Plan | 支持 PM 在 24/36/48 小时内从想法走到 Repo + Demo + Eval |
+| `evals/` | Rubric、Failure Modes | 防止 AI 输出变成“漂亮但不可用”的材料 |
+| `scripts/` | `validate-kit.js`、`check-links.js` | 轻量检查核心文件、Skill 结构和 Markdown 相对链接 |
+
+10 分钟上手路径可以直接写在分享页或二维码旁：
+
+1. 打开 `00-quickstart/10-minute-start.md`；
+2. 选择一个真实任务，例如需求评审、PRD 检查、用户反馈分析或 Hackathon Demo；
+3. 填写 `context/project-brief.md`；
+4. 运行一个 `skills/` 里的 PM Skill；
+5. 用 `loops/pm-loop-canvas.md` 设计下一轮反馈；
+6. 把关键判断写入 `context/decision-log.md`。
+
+许可与安全说明：
+
+- 当前原创模板采用 **Apache-2.0**；
+- 外部项目只做链接、总结和启发记录，来源放入 `ATTRIBUTIONS.md`；
+- 不提交真实密钥、Cookie、内部业务数据或个人隐私；
+- MCP、Browser Agent、Shell Script 等能力默认视为高风险，示例必须使用 Mock、只读或 Human Gate；
+- 发布、删除、付款、外发、权限变更和敏感数据操作必须人工批准。
+
+## 11.1 GitHub 调研结论
+
+GitHub 上已经出现两类值得 PM 使用的资产：
+
+1. **PM-specific Skills / Prompt / Framework 仓库**：直接把产品发现、战略、PRD、指标、增长等方法写成 Agent 可调用的 Skill。
+2. **Agent 与 Builder 基础设施**：提供 Skills 标准、MCP、Spec-driven development、Agent SDK、Workflow、Browser Automation 和 Markdown Slides。
+
+目前缺少的是一套同时面向**中国互联网 PM、非技术上手、Harness、Loop、Builder 和 Hackathon**的轻量工具包。多数 PM 仓库仍偏“框架与提示词”，多数 Agent 仓库又偏开发者。你的差异化机会，就是把两端连接起来。
+
+> GitHub Stars 为 2026-06-20 左右的页面快照，只能反映关注度，不能替代代码质量、安全性和适用性评估。
+
+## 11.2 推荐项目清单
+
+| 项目 | Stars 快照 / 活跃度 | 适合 PM 的场景 | 是否推荐 | 可借鉴点与注意事项 |
+|---|---:|---|---|---|
+| [phuryn/pm-skills](https://github.com/phuryn/pm-skills) | 约 **19.9k**；2026-06 活跃 | Discovery、Strategy、Execution、Launch、Growth、AI Shipping；68 Skills、42 个串联 Workflow、9 个插件 | **强推荐体验** | 最完整的 PM Skills Marketplace 之一；MIT。借鉴“Skill + Command + Plugin”分层和工作流串联方式，不要照搬全部内容 |
+| [deanpeters/Product-Manager-Skills](https://github.com/deanpeters/Product-Manager-Skills) | 约 **5.3k**；v0.80，2026-06-19 | 52 个产品管理 Skills、6 个 Workflow，强调方法、失败模式与判断 | **强推荐学习** | 内容严谨且强调“共享专业基础”；许可证为 **CC BY-NC-SA 4.0**，不能无条件复制进宽松许可仓库，需引用或取得授权 |
+| [deanpeters/product-manager-prompts](https://github.com/deanpeters/product-manager-prompts) | 约 **954**；MIT，无正式 Release | ChatGPT/Claude/Gemini 的 PM Prompt 与 JTBD、用户故事等模板 | **推荐入门** | 适合作为 Prompt Engineering 阶段参考；需要升级为带 Context、Eval 和 Loop 的 Skill |
+| [Digidai/product-manager-skills](https://github.com/Digidai/product-manager-skills) | 约 **113**；v0.5.2，2026-04-12 | PRD 批判、SaaS 指标、Roadmap、Discovery、增长和职业教练 | **推荐参考** | 强调反对“polished nonsense”、输出 Verdict 与 Assumptions；CC BY-NC-SA，注意复用边界 |
+| [product-on-purpose/pm-skills](https://github.com/product-on-purpose/pm-skills) | 约 **355**；v2.27.1，2026-06-17 | Triple Diamond、Foundation/Design Sprint、Sub-agents、CI 校验 | **推荐参考** | 66 个 Skills、模板、工作流、CI Contract；Apache-2.0，适合借鉴质量契约和自动校验 |
+| [erikholmberg/ai-pm-toolkit](https://github.com/erikholmberg/ai-pm-toolkit) | 约 **8**；规模较小 | AI/ML 产品的 Prompt、模板、工具和框架 | **选择性参考** | 覆盖 AI PM 主题，但社区与活跃度较小；适合看目录思路，不作为核心依赖 |
+| [anthropics/skills](https://github.com/anthropics/skills) | 约 **153k**；官方活跃 | 学习 Agent Skill 的目录、渐进加载、脚本/资源组织 | **基础必读** | 官方示例和规范；仓库内不同目录许可可能不同，复用前逐项检查，不要把“公开可见”等同于全部开源 |
+| [github/spec-kit](https://github.com/github/spec-kit) | 约 **114k**；v0.11.3，2026-06-19 | Spec-driven development，从用户场景和结果驱动 Coding Agent | **强推荐 Builder PM** | 把“vibe coding”升级为 Constitution→Specify→Plan→Tasks→Implement；MIT，适合 Agent Demo Starter |
+| [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers) | 约 **87.5k**；2026-01 Release | MCP 参考 Server，理解工具与数据连接 | **推荐学习，不直接生产部署** | 官方仓库明确定位为参考实现；生产环境需安全、鉴权、限流和审计加固 |
+| [openai/openai-agents-python](https://github.com/openai/openai-agents-python) | 约 **27.3k**；v0.17.6，2026-06-19 | Agent、Tools、Guardrails、Sessions、HITL、Tracing | **推荐进阶 Starter** | 轻量且概念清晰；适合做 Agent Demo，但非技术 PM 需要脚手架和托管部署说明 |
+| [langchain-ai/langgraph](https://github.com/langchain-ai/langgraph) | 约 **35k+**；持续活跃 | 有状态、可恢复、Human-in-the-loop 的 Agent 编排 | **推荐进阶** | 适合显式状态和长期工作流；不建议首个 Demo 就引入复杂多 Agent |
+| [langgenius/dify](https://github.com/langgenius/dify) | 约 **146k**；持续活跃 | 可视化 Agent/Workflow、知识库、模型与工具管理 | **推荐非纯代码团队** | 快速搭企业工作流；要评估部署、数据合规和平台锁定 |
+| [n8n-io/n8n](https://github.com/n8n-io/n8n) | 约 **193k**；持续活跃 | 事件驱动自动化、400+ 集成、AI Workflow | **强推荐 Loop 原型** | 触发器和业务连接丰富；采用 fair-code 许可，分发/托管前检查许可条款 |
+| [browser-use/browser-use](https://github.com/browser-use/browser-use) | 约 **99k+**；持续活跃 | 浏览器 Agent、竞品监测、低风险网页自动化 | **选择性推荐** | 能快速演示，但网页结构、登录、验证码和高风险操作使稳定性/安全性成为核心问题 |
+| [slidevjs/slidev](https://github.com/slidevjs/slidev) | 约 **47k+**；持续活跃 | Markdown-first HTML Slides、Vue 组件、代码与图表 | **本分享首选** | 适合从本 MD 底稿生成 HTML；可版本管理、导出 PDF、演讲者备注和 Mermaid |
+| [marp-team/marp](https://github.com/marp-team/marp) | 约 **12k+**；持续活跃 | 极简 Markdown Slides | **轻量备选** | 学习成本低，但复杂布局与交互不如 Slidev；适合更静态的培训资料 |
+
+## 11.3 许可与安全建议
+
+开源工具包最容易被忽略的不是目录，而是许可和安全：
+
+- 自己原创的模板建议采用 **Apache-2.0** 或 **MIT**；Apache-2.0包含更明确的专利条款。
+- 对 CC BY-NC-SA 仓库，可链接、引用和总结，但不要把内容直接复制后以 MIT/Apache 发布。
+- 建立 `ATTRIBUTIONS.md`，记录灵感来源、许可证和改动方式。
+- Skill 中的 Shell/Python 脚本必须可读、最小权限，默认不自动执行。
+- 不在仓库提交真实密钥、内部数据、Cookie 或业务域名。
+- MCP Server 和浏览器 Agent默认视为高风险组件，Starter 中用 Mock/只读工具。
+- 每个示例标注：适合 Demo、适合内部试验、还是可进入生产评估。
+
+## 11.4 推荐仓库名称
+
+# `ai-native-pm-kit`
+
+副标题：
+
+> **Harnesses, Loops, Skills and Builder Starters for Product Managers**  
+> 面向产品经理的 AI Harness、Loop、Skills 与 Builder 启动套件。
+
+### 为什么不首选 `pm-ai-loop-kit`
+
+`pm-ai-loop-kit`更锋利，也更贴合本次演讲，但“Loop Engineering”仍在形成期，可能让仓库定位过窄。`ai-native-pm-kit`更耐久，仓库内部可以把 `loops/` 作为最有差异化的核心目录。
+
+### 仓库定位
+
+它不是：
+
+- AI 工具大全；
+- 一键生成 PRD 的包装；
+- 让 Agent 替 PM 做决策；
+- 生产级全自动系统。
+
+它是：
+
+- 面向 PM 的可读、可改、可版本化工作资产；
+- 从 Prompt 到 Harness，再到 Loop 的渐进路径；
+- 从 Markdown 到可运行 Demo 的 Builder Starter；
+- 一套带 Eval、Human Gate 和安全边界的 Hackathon Kit。
+
+## 11.5 推荐目录结构
+
+```text
+ai-native-pm-kit/
+├── README.md
+├── README.zh-CN.md
+├── LICENSE
+├── CONTRIBUTING.md
+├── CODE_OF_CONDUCT.md
+├── SECURITY.md
+├── ATTRIBUTIONS.md
+├── CHANGELOG.md
+├── AGENTS.md                    # 所有 Agent 的通用规则
+├── CLAUDE.md                    # Claude Code 项目说明
+├── GEMINI.md                    # Gemini CLI 项目说明
+│
+├── 00-quickstart/
+│   ├── 10-minute-start.md
+│   ├── choose-your-workflow.md
+│   └── sample-project/
+│
+├── context/
+│   ├── project-brief.md
+│   ├── product-principles.md
+│   ├── glossary.md
+│   ├── metric-dictionary.md
+│   ├── decision-log.md
+│   ├── evidence-map.md
+│   └── data-classification.md
+│
+├── skills/
+│   ├── problem-framing/SKILL.md
+│   ├── user-research/SKILL.md
+│   ├── competitive-research/SKILL.md
+│   ├── requirement-triage/SKILL.md
+│   ├── prd-spec/SKILL.md
+│   ├── prd-critic/SKILL.md
+│   ├── prototype-builder/SKILL.md
+│   ├── prototype-acceptance/SKILL.md
+│   ├── sql-analysis/SKILL.md
+│   ├── experiment-design/SKILL.md
+│   ├── business-model/SKILL.md
+│   ├── executive-narrative/SKILL.md
+│   ├── agent-product-design/SKILL.md
+│   └── loop-review/SKILL.md
+│
+├── prompts/
+│   ├── chatgpt/
+│   ├── claude/
+│   ├── gemini/
+│   ├── deep-research/
+│   └── generic/
+│
+├── harnesses/
+│   ├── personal-pm-harness/
+│   ├── research-harness/
+│   ├── prd-harness/
+│   ├── builder-harness/
+│   └── agent-product-harness/
+│
+├── loops/
+│   ├── LOOP-CANVAS.md
+│   ├── user-feedback-loop/
+│   ├── competitive-intelligence-loop/
+│   ├── prd-quality-loop/
+│   ├── experiment-loop/
+│   ├── agent-eval-loop/
+│   └── weekly-product-loop/
+│
+├── workflows/
+│   ├── research-to-decision.md
+│   ├── problem-to-prototype.md
+│   ├── idea-to-prd.md
+│   ├── data-to-decision.md
+│   ├── feedback-to-experiment.md
+│   └── demo-to-roadmap.md
+│
+├── templates/
+│   ├── problem-brief.md
+│   ├── research-plan.md
+│   ├── interview-guide.md
+│   ├── insight-card.md
+│   ├── competitive-task-map.md
+│   ├── decision-memo.md
+│   ├── prd.md
+│   ├── agent-spec.md
+│   ├── tool-contract.md
+│   ├── experiment-protocol.md
+│   ├── business-case.xlsx.example.md
+│   ├── retro.md
+│   └── pitch-deck.md
+│
+├── evals/
+│   ├── README.md
+│   ├── rubrics/
+│   ├── golden-cases/
+│   ├── red-team-cases/
+│   ├── trace-review/
+│   └── eval-result-template.md
+│
+├── hackathon/
+│   ├── README.md
+│   ├── preflight-checklist.md
+│   ├── IDEAS-scorecard.md
+│   ├── team-charter.md
+│   ├── 24h-plan.md
+│   ├── 36h-plan.md
+│   ├── 48h-plan.md
+│   ├── demo-spine.md
+│   ├── judging-rubric.md
+│   ├── pitch-template.md
+│   └── risk-register.md
+│
+├── starters/
+│   ├── html-demo/
+│   ├── agent-demo-openai/
+│   ├── agent-demo-dify/
+│   ├── n8n-loop/
+│   └── slidev-deck/
+│
+├── examples/
+│   ├── maps-local-life/
+│   ├── os-agent-integration/
+│   ├── feedback-loop/
+│   └── hackathon-memorycare-placeholder/
+│
+├── docs/
+│   ├── concepts/
+│   ├── privacy-and-security.md
+│   ├── non-technical-pm-guide.md
+│   ├── tool-selection.md
+│   └── roadmap.md
+│
+└── scripts/
+    ├── validate-skills.py
+    ├── validate-links.py
+    └── create-new-skill.py
+```
+
+## 11.6 首批最值得做的 Skills
+
+不要第一版就做 50 个 Skill。建议先做 12 个高价值、能串成闭环的核心 Skill：
+
+1. `problem-framing`：事实、用户、任务、约束、假设、证据缺口；
+2. `deep-research-planner`：问题树、来源策略、交叉核验；
+3. `user-research-synthesis`：原文回链、主题、矛盾、置信度；
+4. `requirement-triage`：机会、影响、证据、风险、最小验证；
+5. `prd-spec`：把决策写成可测试 Spec；
+6. `prd-critic`：找 solution smuggling、指标剧场、异常遗漏；
+7. `prototype-builder`：从 Brief 到纵向 HTML Demo；
+8. `prototype-acceptance`：按任务、状态、异常、可解释性验收；
+9. `data-analysis`：分析计划、SQL、自检、事实/解释分离；
+10. `experiment-design`：假设、主指标、反指标、停止条件；
+11. `agent-product-design`：Intent、Tools、State、Permission、Eval、Fallback；
+12. `loop-review`：从 Trace 和业务结果更新 Harness。
+
+## 11.7 首批 Prompt 模板
+
+- `deep-research-master.md`：有问题树、来源优先级和证据表；
+- `interview-coding.md`：原文回链与反例；
+- `competitor-task-analysis.md`：按用户任务而非功能；
+- `requirement-red-team.md`：攻击需求证据和隐含假设；
+- `prd-from-decisions.md`：不自动填充未决事实；
+- `sql-plan-and-check.md`：先计划、再 SQL、后自检；
+- `prototype-spec.md`：页面、状态、数据和验收；
+- `agent-trace-review.md`：意图/工具/结果/失败归因；
+- `decision-memo.md`：备选、取舍和请求决策；
+- `slides-story-editor.md`：一页一观点与反方审稿；
+- `hackathon-scope-cutter.md`：只保留 Demo Spine；
+- `loop-designer.md`：生成 Canvas、Human Gate 和停止条件。
+
+## 11.8 AI Harness 模板
+
+每个 Harness 应包含：
+
+```text
+Purpose
+Scope / Non-goals
+Owner
+Context Sources
+Skills
+Tools and Permissions
+Workflow / State Machine
+Output Contract
+Evaluators
+Human Gates
+Known Failure Modes
+Cost / Latency Budget
+Run Log
+Change Log
+```
+
+## 11.9 AI Loop 模板
+
+```yaml
+name: weekly-user-feedback-loop
+owner: product-manager
+objective:
+  primary: identify the highest-impact validated user problem each week
+  guardrails:
+    - do not expose personal data
+    - do not equate frequency with importance
+trigger:
+  type: schedule
+  cadence: weekly
+inputs:
+  - feedback_export
+  - issue_log
+  - product_metrics
+state:
+  - known_themes
+  - previous_decisions
+  - open_questions
+actions:
+  - deduplicate
+  - code_evidence
+  - find_contradictions
+  - rank_opportunities
+  - propose_validation
+evaluation:
+  rubric: evals/rubrics/feedback-insight.md
+  sample_review_rate: 20%
+human_gates:
+  - priority_decision
+  - user_claims
+stop_conditions:
+  - insufficient_data
+  - privacy_violation
+  - budget_exceeded
+persistence:
+  - update_evidence_map
+  - append_decision_log
+  - save_failure_cases
+```
+
+## 11.10 各工具的入口文件建议
+
+### ChatGPT / Deep Research
+
+- `prompts/chatgpt/project-instructions.md`
+- `prompts/deep-research/research-brief.md`
+- 说明怎样上传项目 Brief、限定站点、要求引用和审查结论。
+
+### Claude / Claude Code
+
+- 根目录 `CLAUDE.md`；
+- `.claude/skills/` 或仓库 Skills；
+- 强调先读 Brief、按文件改动、运行测试、留下决策。
+
+### Cursor
+
+- `.cursor/rules/pm-builder.mdc`；
+- 指定目录结构、设计原则、禁止改动文件和验收命令。
+
+### Gemini
+
+- 根目录 `GEMINI.md`；
+- NotebookLM 使用说明和资料命名规范；
+- Gemini CLI Skill 路径。
+
+### 百度 Comate
+
+- 提供一份适配 Comate 的项目说明、Subagent 角色和 Skill 清单；
+- 使用前根据百度内部合规要求调整，不在公开仓库写入内部工具配置、账号或数据。
+
+## 11.11 README.md 初稿
+
+以下内容可直接作为仓库第一版 README 的基础：
+
+```markdown
+# AI-Native PM Kit
+
+Harnesses, Loops, Skills and Builder Starters for Product Managers.
+
+面向产品经理的 AI Harness、Loop、Skills、原型与 Hackathon 启动套件。
+
+## Why
+
+AI 对 PM 的价值，不是更快写出旧世界的文档，而是帮助我们重新设计工作系统：
+
+- Prompt Engineering：把一次任务说清楚；
+- Harness Engineering：把上下文、Skills、工具、状态和评估组织起来；
+- Loop Engineering：让现实反馈驱动下一轮行动和系统改进。
+
+这个仓库帮助 PM 从 AI User 走向 AI Builder & Loop Owner。
+
+## What You Get
+
+- 可复用的 PM Skills；
+- 项目 Context 与 Decision Log 模板；
+- 用户研究、需求、PRD、数据和实验工作流；
+- AI Harness 与 Loop Canvas；
+- Agent Spec、Tool Contract 与 Eval 模板；
+- HTML Demo / Agent Demo / Slidev Starter；
+- 24h / 36h / 48h Hackathon Toolkit；
+- 面向非技术 PM 的十分钟 Quick Start。
+
+## 10-Minute Quick Start
+
+### 1. 下载
+
+点击 `Code → Download ZIP`，或：
+
+```bash
+git clone https://github.com/<your-account>/ai-native-pm-kit.git
+cd ai-native-pm-kit
+```
+
+### 2. 选择一个真实任务
+
+打开 `00-quickstart/choose-your-workflow.md`，从以下任务选一个：
+
+- 评审一份 PRD；
+- 分析一组用户反馈；
+- 把一个想法做成 HTML Demo；
+- 设计一项产品实验；
+- 搭建一条每周竞品/反馈 Loop。
+
+### 3. 填写项目上下文
+
+复制并填写：
+
+```text
+context/project-brief.md
+context/glossary.md
+context/decision-log.md
+```
+
+不要放入未经授权的个人信息、密钥或公司机密。
+
+### 4. 使用一个 Skill
+
+例如：
+
+```text
+请先阅读 context/project-brief.md，
+然后严格使用 skills/prd-critic/SKILL.md 评审这份 PRD。
+缺少证据时明确标记，不要补写事实。
+最后输出：阻断问题、重要问题、建议实验和需要 PM 决策的事项。
+```
+
+可在 ChatGPT、Claude、Cursor、Comate、Codex 或支持本地文件的 Agent 中使用。
+
+### 5. 运行一次人工 Loop
+
+打开 `loops/LOOP-CANVAS.md`，填写：
+
+- Objective
+- Trigger
+- Inputs / State
+- Actions
+- Evaluation
+- Human Gates
+- Stop Conditions
+- Memory Update
+
+先手动运行三次。只有结果稳定、风险可控后，再用 n8n、Dify 或代码自动化。
+
+## Recommended Path
+
+```text
+Prompt → Skill → Workflow → Harness → Loop → Builder
+```
+
+- Beginner：从 `prompts/` 与 `templates/` 开始；
+- Operator：使用 `skills/` 和 `workflows/`；
+- Builder：使用 `starters/html-demo/`；
+- Agent PM：使用 `agent-spec`、`evals/` 和 `loops/agent-eval-loop/`；
+- Hackathon Team：直接进入 `hackathon/`。
+
+## Core Principles
+
+1. Evidence before eloquence.
+2. Decisions before documents.
+3. One working vertical slice before many features.
+4. External evaluation before self-congratulation.
+5. Minimum permission and explicit human gates.
+6. Failures must update the system.
+7. The PM remains accountable for the outcome.
+
+## Repository Structure
+
+- `context/`：业务背景、术语、指标和决策；
+- `skills/`：可复用专业能力；
+- `harnesses/`：完整任务环境；
+- `loops/`：持续反馈回路；
+- `workflows/`：跨 Skill 的端到端流程；
+- `templates/`：PM 常用交付物；
+- `evals/`：Rubric、Golden Cases、Red-team Cases；
+- `hackathon/`：赛前、构建、Demo、Pitch 和评审工具；
+- `starters/`：HTML、Agent、n8n、Slidev 脚手架；
+- `examples/`：脱敏示例。
+
+## Safety and Privacy
+
+- 不提交 API Key、Cookie、真实用户隐私和公司机密；
+- 默认只读、最小权限；
+- 发布、删除、付款、外发和敏感数据操作必须人工批准；
+- Agent 输出不是事实来源，关键结论必须核验；
+- Demo Starter 不代表生产安全或稳定性。
+
+详见 `SECURITY.md` 与 `docs/privacy-and-security.md`。
+
+## Contributing
+
+欢迎提交：
+
+- 新 Skill；
+- Golden/Failure Case；
+- 中文 PM 工作流；
+- 地图、本地生活、Agent、商业化和 Hackathon 的脱敏示例；
+- 对现有模板的真实使用反馈。
+
+每个 Skill PR 必须包含 Purpose、Inputs、Procedure、Output Contract、Quality Checks、Human Gates、Examples 和 License Source。
+
+## License
+
+建议原创内容使用 Apache-2.0。第三方资产按 `ATTRIBUTIONS.md` 与各自许可证使用。
+```
+
+## 11.12 非技术 PM 的十分钟上手演示脚本
+
+分享现场可以演示：
+
+1. 扫码打开 GitHub；
+2. 下载 ZIP；
+3. 打开 `00-quickstart/sample-project/project-brief.md`；
+4. 复制 `skills/problem-framing/SKILL.md` 到支持文件的 AI 工具；
+5. 输入一个真实但脱敏的问题；
+6. 得到问题卡与证据缺口；
+7. 点击 `starters/html-demo/`，让 Cursor/Comate/Replit 生成一个核心任务 Demo；
+8. 打开 `loops/LOOP-CANVAS.md`，补上如何收集反馈和下一轮迭代。
+
+这段演示的重点不是工具速度，而是让听众看到：**一个 Prompt 如何升级成 Skill，一个 Skill 如何进入 Harness，一个 Demo 如何进入 Loop。**
+
+---
+# 12. 分享 Slides 初步结构（40 页 / 60 分钟）
+
+> 这部分只是从本文抽取的演讲骨架，不是最终 Slides。建议平均 1–1.5 分钟/页，其中视觉过渡页 15–30 秒，案例与框架页 2–3 分钟。
+
+## 时间分配
+
+| 模块 | 页码 | 建议时间 |
+|---|---:|---:|
+| Opening：重新定义 PM | 1–4 | 5 分钟 |
+| 趋势与大厂实践 | 5–14 | 12 分钟 |
+| Prompt → Harness → Loop | 15–26 | 18 分钟 |
+| PM 五阶段与工作流 | 27–30 | 8 分钟 |
+| Builder 与 Hackathon | 31–37 | 12 分钟 |
+| Toolkit、行动与 Closing | 38–40 | 5 分钟 |
+
+## 逐页大纲
+
+### Slide 1｜封面：AI 原生组织下的 PM 自进化实践
+
+- **核心观点：**从“使用 AI”走向“与 AI 协同工作”。
+- **页面内容：**主题、分享人、部门、Map Pro 培训、日期；副标题“Prompt → Harness → Loop → Builder”。
+- **可视化建议：**深蓝底，地图路径线从聊天框穿过 Harness 齿轮，最终形成循环轨道；避免堆工具 Logo。
+- **演讲备注：**一句话交代这不是工具课，而是 PM 工作系统课。
+
+### Slide 2｜先做一个现场自测
+
+- **核心观点：**大多数人已经在用 AI，但仍停在单点提效。
+- **页面内容：**四问：会让 AI 写文档？会让它调用工具？有自己的 Skill？有能持续跑的反馈 Loop？
+- **可视化建议：**四级进度条或举手互动。
+- **演讲备注：**让听众举手或扫码投票；不要评价高低，建立共同起点。
+
+### Slide 3｜三个 PM，三个世界
+
+- **核心观点：**文档型 PM、Agent PM、Hackathon Builder 面对的工作对象不同。
+- **页面内容：**日常文档、地图 Agent 复杂意图、36 小时 Hackathon 三个场景。
+- **可视化建议：**三联画：文档、Agent 路径、运行 Demo。
+- **演讲备注：**用自己的“小度想想 / OS Agent / SuperAI”经历做真实开场。
+
+### Slide 4｜今天只讲一个判断
+
+- **核心观点：**AI 不是让 PM 更快写文档，而是重构 PM 的工作系统。
+- **页面内容：**大字观点；下面对比“更快地产出旧交付物”与“重新设计信息—行动—反馈”。
+- **可视化建议：**旧流水线被重构成循环系统。
+- **演讲备注：**为后面所有工具和框架定锚。
+
+### Slide 5｜2023–2026：从聊天框到工作系统
+
+- **核心观点：**行业焦点已从生成能力迁移到 Agent、Harness、Skills 和 Loop。
+- **页面内容：**2023 对话、2024 工具、多模态，2025 Agent/Builder，2026 Harness/Automation/Loop。
+- **可视化建议：**四年时间轴，每年一个关键词。
+- **演讲备注：**时间轴是简化叙事，不声称所有产品同步演进。
+
+### Slide 6｜六个真正重要的迁移
+
+- **核心观点：**工具品牌会变，工作范式的迁移更稳定。
+- **页面内容：**回答→完成工作；单 App→连接环境；Prompt→Skill；Copilot→后台 Agent；输出→Eval；个人→组织系统。
+- **可视化建议：**六组左右箭头。
+- **演讲备注：**每组只举一个例子，不展开工具大全。
+
+### Slide 7｜AI Native 工作系统的四层
+
+- **核心观点：**PM 最容易停在模型层，价值在 Harness、Loop 和治理层。
+- **页面内容：**模型与交互、Harness、Loop、组织与治理。
+- **可视化建议：**四层塔或同心圆。
+- **演讲备注：**强调“模型升级不能自动补齐上层设计”。
+
+### Slide 8｜工具不要按 Logo 记，要按角色组合
+
+- **核心观点：**研究、知识、表达、Builder、Workflow、Eval 分别承担不同角色。
+- **页面内容：**六类工具及一个代表组合。
+- **可视化建议：**像产品团队组织图，不做 Logo 墙。
+- **演讲备注：**点到 ChatGPT Deep Research、NotebookLM、Cursor/Comate、Dify/n8n、Evals。
+
+### Slide 9｜一个 PM 的最小 AI Stack
+
+- **核心观点：**三到五个工具足以启动，不要工具囤积。
+- **页面内容：**Research → Project Context → Builder → GitHub → Feedback。
+- **可视化建议：**一条端到端管道。
+- **演讲备注：**结合自己当前真实使用方式，标注哪些已在用、哪些准备实践。
+
+### Slide 10｜2026 年最高阶用法
+
+- **核心观点：**把业务判断编码为上下文、Skills、约束和评估，让 AI 在边界内持续执行。
+- **页面内容：**一句定义 + PM 仍负责目标、证据、结果。
+- **可视化建议：**人设定轨道，Agent 在轨道内运行。
+- **演讲备注：**避免“全自动 PM”叙事。
+
+### Slide 11｜中国大厂已经从 Copilot 走向工作环境
+
+- **核心观点：**公开实践的共性是组织级 Context、Skills、连接器和评估。
+- **页面内容：**百度、腾讯、阿里、飞书、美团、京东、手机 OS 生态的摘要矩阵。
+- **可视化建议：**公司 × 工作系统能力热力图，不需要精确评分。
+- **演讲备注：**说明公开证据以研发和企业协作为主。
+
+### Slide 12｜最危险的提效指标：AI 生成了多少
+
+- **核心观点：**生成占比不等于端到端交付效率。
+- **页面内容：**阿里云公开文章的度量提醒：需求、协作、测试、CI、质量与业务结果都要看。
+- **可视化建议：**冰山图：生成率在水面，返工/等待/质量在水下。
+- **演讲备注：**类比 PM：“写了多少 PRD”也不是价值。
+
+### Slide 13｜美团案例：AI 不会自动让复杂度收敛
+
+- **核心观点：**人类共识必须变成机器可执行的规则与验证。
+- **页面内容：**“人人对齐 → 人机对齐”；Rules/Skills/Test/Eval。
+- **可视化建议：**失控代码曲线被规则与测试闭环拉回。
+- **演讲备注：**这是 Harness 与 Loop 的中国实证主案例。
+
+### Slide 14｜OS Agent 时代：产品接口从页面变成行动契约
+
+- **核心观点：**App Agent × OS Agent 要设计 Intent、Action、Permission、Result、Fallback。
+- **页面内容：**华为、HONOR、vivo 公开意图/Agent 框架；地图的启发。
+- **可视化建议：**系统意图路由到地图检索、路线、到店服务。
+- **演讲备注：**结合自己合作探索，但不披露内部敏感内容。
+
+### Slide 15｜主线登场：PM 的 AI 进化三部曲
+
+- **核心观点：**Prompt → Harness → Loop。
+- **页面内容：**把问题问清楚、把能力系统化、把反馈闭环跑起来。
+- **可视化建议：**三级火箭或三段路线。
+- **演讲备注：**说明三者是不同尺度，不是后一种取代前一种。
+
+### Slide 16｜Prompt Engineering：把一次任务说清楚
+
+- **核心观点：**好 Prompt 的本质是好任务定义。
+- **页面内容：**Decision、Context、Constraints、Task、Eval、Uncertainty 六块。
+- **可视化建议：**Prompt Canvas。
+- **演讲备注：**展示一个需求分析 Prompt 前后对比。
+
+### Slide 17｜为什么“会写 Prompt”已经不够
+
+- **核心观点：**没有状态、工具、权限、验收和反馈，Prompt 只能优化一次输出。
+- **页面内容：**六个局限：一次上下文、不稳定、不能执行、无外部验收、难沉淀、无回流。
+- **可视化建议：**聊天框四周缺失的六块拼图。
+- **演讲备注：**让听众想到自己收藏夹里无人维护的 Prompt。
+
+### Slide 18｜Context Engineering：被忽略的桥梁
+
+- **核心观点：**不是把信息全塞进去，而是在正确时刻提供正确上下文。
+- **页面内容：**事实/假设/决策分离；按需加载；资料时效与 Owner。
+- **可视化建议：**聚光灯从资料海洋照到当前任务需要的几份材料。
+- **演讲备注：**一句话解释为什么 Project Brief 比超长 Prompt 更重要。
+
+### Slide 19｜Harness Engineering：给 AI 一套可靠工作环境
+
+- **核心观点：**Harness 不是 Prompt 库，而是知识、Skills、工具、状态、规则与 Eval 的组合。
+- **页面内容：**行业定义 + 面向 PM 的定义。
+- **可视化建议：**模型置于“驾驶舱”或工具台中。
+- **演讲备注：**引用 OpenAI/Anthropic的一手定义，说明人从执行转向环境设计。
+
+### Slide 20｜PM AI Harness 的八层
+
+- **核心观点：**Knowledge、Prompt、Skill、Tool、Workflow、Agent、Output、Feedback 形成系统。
+- **页面内容：**八层 + 横向护栏 Policy/State/Observability。
+- **可视化建议：**八层堆栈，Feedback 形成回箭头。
+- **演讲备注：**不要逐层念，重点讲 Skill、Eval 与 Human Gate。
+
+### Slide 21｜一个地图内容 PM 的 Harness 怎样运转
+
+- **核心观点：**每周反馈→问题识别→Demo→验证可以成为可复用流程。
+- **页面内容：**Signal、Research、Critic、PM Gate、Builder、Test、Decision Log。
+- **可视化建议：**端到端流程图。
+- **演讲备注：**用抽象或已获许可的真实案例替换。
+
+### Slide 22｜Loop Engineering：一个正在形成的新概念
+
+- **核心观点：**它很新，值得关注，但不能包装成成熟共识。
+- **页面内容：**Addy Osmani、LangChain 2026-06 文章；“从人持续提示 Agent 到系统化循环”。
+- **可视化建议：**文章时间线 + “Emerging”标签。
+- **演讲备注：**主动说明不确定性，增加可信度。
+
+### Slide 23｜Loop Engineering 的 PM 定义
+
+- **核心观点：**受控地重复，并在每轮获得新证据。
+- **页面内容：**Objective→Trigger→State→Act→Observe→Evaluate→Decide→Persist。
+- **可视化建议：**闭环环形图，中间写 Human Owner。
+- **演讲备注：**强调“循环”不等于无限自动重试。
+
+### Slide 24｜四种叠加 Loop
+
+- **核心观点：**执行、验证、事件触发和 Harness 改进是不同层次。
+- **页面内容：**Agent Loop、Verification Loop、Event-driven Loop、Hill-climbing Loop。
+- **可视化建议：**四个嵌套圆环。
+- **演讲备注：**分别用研究、PRD、舆情、Agent 失败改进举例。
+
+### Slide 25｜PM LOOP Canvas
+
+- **核心观点：**每条 Loop 开始前必须写清 Owner、目标、评估、停止和升级。
+- **页面内容：**12 格 Canvas 的精简版。
+- **可视化建议：**一页可拍照模板。
+- **演讲备注：**告诉听众这张模板会放在 GitHub 下载。
+
+### Slide 26｜Human-in-the-loop 不是补丁，是治理
+
+- **核心观点：**人应出现在信息增益最大、错误代价最高的位置。
+- **页面内容：**H0 抽检、H1 审核、H2 审批、H3 共决策。
+- **可视化建议：**风险 × 自动化程度矩阵。
+- **演讲备注：**举发布、删除、付款、用户承诺等敏感动作。
+
+### Slide 27｜AI-Native PM 五阶跃迁
+
+- **核心观点：**User → Operator → Orchestrator → System Designer → Builder & Loop Owner。
+- **页面内容：**会用、会派、会编、会组织、会创造与迭代。
+- **可视化建议：**五级阶梯，每级一个可见产物。
+- **演讲备注：**让听众自评当前层级，不把阶段变成职级评价。
+
+### Slide 28｜成熟度不看工具数，看三个结果
+
+- **核心观点：**可复现、可验证、可进化。
+- **页面内容：**三项检查与反例。
+- **可视化建议：**三角形或三个仪表盘。
+- **演讲备注：**一个人用了十个工具，未必比维护一条稳定 Loop 更成熟。
+
+### Slide 29｜PM 日常工作：从文档链变成证据链
+
+- **核心观点：**Signal→Research→Frame→Options→Build→Evaluate→Decide→Learn。
+- **页面内容：**用户研究、竞品、需求、PRD、数据、实验、汇报都可映射到同一链路。
+- **可视化建议：**线性流程在末尾回环。
+- **演讲备注：**快速点三个最常见场景，不展开 15 项全部细节。
+
+### Slide 30｜Agent PM 的新交付物
+
+- **核心观点：**除了 PRD，还要交付 Tool Contract、State、Eval、Trace 和 Fallback。
+- **页面内容：**传统 PRD vs Agent Spec 对比。
+- **可视化建议：**两列交付物清单。
+- **演讲备注：**结合地图 Agent 设计强调权限、确认和失败恢复。
+
+### Slide 31｜为什么 PM 必须成为 Builder
+
+- **核心观点：**当 Demo 成本下降，PM 不能只做需求传递者。
+- **页面内容：**模糊→具体、跨职能共同对象、暴露魔法步骤、缩短证据链。
+- **可视化建议：**PPT 想象云 vs 浏览器中运行的 Demo。
+- **演讲备注：**澄清 Builder 不等于替代工程师。
+
+### Slide 32｜PM Builder 十级阶梯
+
+- **核心观点：**从写清问题到把 Demo 变成真实项目起点。
+- **页面内容：**10 级能力简版。
+- **可视化建议：**登山路线或能力树。
+- **演讲备注：**听众不必一次到十级，先找到下一小步。
+
+### Slide 33｜Demo 是最短的证据链
+
+- **核心观点：**好的 Demo 证明一项关键假设，不是缩小版完整产品。
+- **页面内容：**Problem→Demo Spine→Risk Spike→Vertical Slice→Eval。
+- **可视化建议：**漏斗，把功能压缩成一条主链。
+- **演讲备注：**展示一个被删掉 80% 功能后更清晰的假想例子。
+
+### Slide 34｜SuperAI NEXT：36 小时改变了什么
+
+- **核心观点：**Hackathon 让 PM 从表达者转向对可运行结果负责的人。
+- **页面内容：**个人经历的关键冲突、取舍和学习。
+- **可视化建议：**比赛时间轴、MemoryCare 截图/照片（需授权）。
+- **演讲备注：**使用真实故事；不要虚构名次或结果。
+
+### Slide 35｜选题公式：I-D-E-A-S
+
+- **核心观点：**重要不等于适合 Hackathon；还要可演示、AI 必要、资源可得、团队匹配。
+- **页面内容：**Impact、Demoability、Essential AI、Access、Squad Fit ÷ 风险。
+- **可视化建议：**五边形评分卡。
+- **演讲备注：**现场拿一个地图题快速评分。
+
+### Slide 36｜36 小时计划：前 6 小时决定成败
+
+- **核心观点：**先烧掉最大风险，24 小时后冻结范围。
+- **页面内容：**0–6h、6–18h、18–24h、24–30h、30–36h。
+- **可视化建议：**彩色时间轴。
+- **演讲备注：**强调最后阶段不加功能，只做稳定、提交和排练。
+
+### Slide 37｜Hackathon Toolkit：让 PM 不能只做 PPT
+
+- **核心观点：**每队必须提交 Repo、Demo、Eval、Decision Log 与备份。
+- **页面内容：**`hackathon-kit/` 已包含 Preflight、Team Charter、Problem One-Pager、Demo Spine、24h/36h/48h Plan、Judging Rubric、Risk Register、Eval Template、Decision Log、Repo Template、Demo Backup Plan。
+- **可视化建议：**工具包展开图。
+- **演讲备注：**强调 Hackathon 交付物不是 PPT，而是 Repo + Demo + Eval + Decision Log + Backup Plan。
+
+### Slide 38｜现场发布：`rainnochen/ai_native_pm_sharing`
+
+- **核心观点：**不是 Prompt 合集，而是从 Prompt 到 Loop 的启动套件。
+- **页面内容：**仓库实际目录：`00-quickstart/`、`context/`、`skills/`、`harness/`、`loops/`、`hackathon-kit/`、`evals/`、`scripts/`；产品化名称为 AI Native PM Kit。
+- **可视化建议：**GitHub Repo 截图 + 大二维码。
+- **演讲备注：**现场演示 `00-quickstart/10-minute-start.md`：选任务、填 Project Brief、跑一个 Skill、设计一个 Loop。
+
+### Slide 39｜从明天开始：7 天 PM 自进化挑战
+
+- **核心观点：**先完成一条小而真实的闭环。
+- **页面内容：**链接到 `00-quickstart/10-minute-start.md`；Day1 选任务；Day2 Brief；Day3 Skill；Day4 Harness；Day5 Loop；Day6 Demo/Eval；Day7 更新 Decision Log。
+- **可视化建议：**七日卡片或路线。
+- **演讲备注：**让听众不要从“大平台”开始，而是先跑一条小而真实的闭环。
+
+### Slide 40｜Closing：不要只使用 AI，开始设计共同进化的系统
+
+- **核心观点：**最好的 PM 把 AI 变成外脑、搭档、执行系统、反馈系统和产品实验室。
+- **页面内容：**三句话回收：Prompt 说清楚；Harness 做稳定；Loop 跑持续。最后一句“PM 对问题、证据和结果负责”。
+- **可视化建议：**开场路径最终闭合为 Loop；保留提问二维码。
+- **演讲备注：**以个人行动承诺结束，例如“从下一次需求开始，先做 Demo，再开评审”。
+
+---
+
+# 13. 下一步生成 HTML Slides 的 Prompt
+
+下面这段 Prompt 可在底稿确认后交给 ChatGPT、Claude、Cursor 或 Comate。推荐技术方案是 **Slidev**：Markdown-first、可输出 HTML/PDF、支持 Vue、Mermaid、代码高亮、演讲者备注和版本管理，最适合从本底稿继续生成。
+
+```text
+你是一名资深演示设计师、前端工程师、技术内容编辑和 AI 产品研究员。
+
+请基于我提供的 Markdown 分享底稿《AI 原生组织下的 PM 自进化实践》，生成一套可直接运行和部署的 Slidev HTML Slides。
+
+## 一、内容原则
+
+1. 以提供的 Markdown 底稿为唯一内容事实底座，不虚构数据、案例、个人经历、公司内部信息或引用。
+2. 保留并强化整场主线：
+   Prompt Engineering → Context Engineering → Harness Engineering → Loop Engineering → PM Builder。
+3. 核心结论是：
+   - AI 不是让 PM 更快写文档，而是重构 PM 的工作系统；
+   - Prompt 决定一次回答；Harness 决定一次任务能否可靠完成；Loop 决定能力能否持续运行并越跑越好；
+   - PM 的稀缺价值迁移到问题定义、系统设计、原型构建、证据验证、反馈闭环和责任承担；
+   - Hackathon 是 PM 成为 Builder 的高密度训练场。
+4. 全套控制在 38–42 页，目标演讲时间 60 分钟。
+5. 每页只表达一个可复述观点，正文尽量不超过 45 个汉字；复杂内容拆成图示或逐步动画。
+6. 事实、数据和案例页必须保留短引用与来源；完整链接放在每页底部小字或 Notes 中。
+7. 对 Loop Engineering 明确标注“2026 年新兴概念，尚未标准化”，不要包装成既定行业共识。
+8. MemoryCare、百度地图内部数据、小度想想和 OS Agent 个人案例若底稿没有细节，使用醒目的 TODO 占位符，不得补写。
+
+## 二、受众与语气
+
+- 场景：百度地图「征图学苑 Map Pro 培训」；
+- 受众：业务、策略、内容、增长、商业化等方向 PM；
+- 语气：务实、清晰、有判断、有行动感，不写成学术论文或 AI 工具大全；
+- 避免“赋能、全面升级、降本增效”等空泛表达；
+- 关键概念第一次出现时用一句普通 PM 能理解的话解释。
+
+## 三、视觉风格
+
+- 画布：16:9；
+- 整体：专业、年轻、AI Native、地图与路径感；
+- 主背景：深蓝/靛蓝；强调色可使用青蓝与少量洋红渐变；
+- 文字：高对比白色或浅灰；中文字体使用系统安全字体，不打包或分发字体文件；
+- 视觉母题：路径、节点、轨道、闭环、地图等高线、Agent 状态流；
+- 不做密集 Logo 墙，不使用无意义机器人插画；
+- 图表优先使用 CSS、SVG、Mermaid 或 Slidev 组件绘制；
+- 动画克制，只用于逐步揭示框架和 Loop；
+- 每页保留一致页码、章节标识和来源样式。
+
+## 四、必须制作的关键图示
+
+1. 2023–2026“聊天框到工作系统”时间轴；
+2. AI Native 工作系统四层图；
+3. Prompt / Harness / Loop 三者对比；
+4. PM AI Harness 八层架构 + 三条横向护栏；
+5. Loop 的九部件环形图；
+6. Agent / Verification / Event-driven / Hill-climbing 四层 Loop；
+7. AI-Native PM 五阶跃迁；
+8. Signal→Research→Frame→Options→Build→Evaluate→Decide→Learn 工作流；
+9. PM Builder 十级阶梯；
+10. Hackathon I-D-E-A-S 评分卡与 36 小时时间轴；
+11. `ai-native-pm-kit` 仓库结构与十分钟 Quick Start。
+
+## 五、技术要求
+
+请输出一个完整项目，结构至少包括：
+
+- package.json
+- slides.md
+- components/
+- layouts/
+- styles/index.css
+- public/
+- README.md
+
+要求：
+
+1. 使用当前稳定版 Slidev；
+2. 项目执行 `npm install && npm run dev` 即可启动；
+3. 提供 `npm run build` 生成静态 HTML；
+4. 提供 `npm run export` 导出 PDF；
+5. 每页在 Slidev Notes 中写出演讲备注；
+6. Mermaid 图若影响构建稳定性，改用内联 SVG/CSS；
+7. 不依赖需要登录或易失效的外部图片；
+8. 所有外部素材必须注明来源与许可，优先不使用；
+9. 为 GitHub 仓库二维码和个人案例图片预留占位组件；
+10. 代码要有可读注释，不使用难维护的复杂动画库；
+11. 检查窄屏和投影下的字号，正文不低于 24px；
+12. 自动生成一页隐藏的 Sources Appendix，汇总全部引用链接。
+
+## 六、页面结构
+
+以底稿第 12 章的 40 页大纲为基础。允许为了节奏合并或拆分 2 页，但不得改变故事线：
+
+Opening → 趋势 → 大厂实践 → Prompt/Harness/Loop → PM 五阶段 → 工作流 → Builder → Hackathon → GitHub Toolkit → 7 天行动 → Closing。
+
+## 七、交付顺序
+
+第一步：先输出页面清单、视觉系统、组件清单和待确认的 TODO，不生成代码。
+第二步：我确认后，再生成完整 Slidev 项目文件。
+第三步：生成后自检：
+- 页数与时间；
+- 引用完整性；
+- 是否有内容溢出；
+- Mermaid/SVG 是否可渲染；
+- npm build 是否通过；
+- 是否存在虚构事实；
+- 是否保留 Speaker Notes。
+
+现在请先执行第一步。
+```
+
+---
+
+# 14. 分享前的编辑与验证清单
+
+## 14.1 必须由分享人补齐
+
+- [ ] MemoryCare 的真实问题、产品、分工、Demo、结果和个人反思；
+- [ ] SuperAI NEXT 现场可公开的图片、视频和项目链接；
+- [ ] 小度想想 / OS Agent 中可公开或内部可分享的真实案例；
+- [ ] 一条自己实际运行过的 PM Harness；
+- [ ] 一条至少跑过三轮的 PM Loop；
+- [ ] `rainnochen/ai_native_pm_sharing` 可访问仓库和二维码；
+- [ ] 现场 Demo 的固定数据、离线视频和失败备份；
+- [ ] `00-quickstart/10-minute-start.md` 已能在现场演示；
+- [ ] `hackathon-kit/` 核心模板已完成公开前安全检查。
+
+## 14.2 数据与来源复核
+
+- [ ] 2026-06-22 再检查工具能力、GitHub Stars 与链接；
+- [ ] 百度、腾讯、阿里等公开效率数据核对原始口径；
+- [ ] 区分官方厂商陈述、独立事实和本文推断；
+- [ ] 不把“代码生成比例”直接表述为完整生产率；
+- [ ] Loop Engineering 页面保留“新兴、未标准化”提示；
+- [ ] 所有个人与内部信息完成保密/合规审查。
+- [ ] `npm run validate` 与 `npm run check:links` 通过；
+- [ ] `ATTRIBUTIONS.md` 已记录外部启发来源，未复制受限许可证内容。
+
+## 14.3 演讲节奏复核
+
+- [ ] 前 5 分钟不讲工具细节，先建立问题；
+- [ ] 大厂案例最多保留 3 个重点，不逐公司念表；
+- [ ] Prompt/Harness/Loop 讲清一个例子胜过讲十个定义；
+- [ ] 至少留 5 分钟现场演示或互动；
+- [ ] Slides 只是视觉骨架，完整资料通过 GitHub 领取；
+- [ ] 结尾给出 7 天可执行挑战，而不是抽象号召。
+
+---
+
+# 15. 核心来源索引
+
+## Prompt、Context、Harness 与 Loop
+
+- [OpenAI — Harness engineering: leveraging Codex in an agent-first world](https://openai.com/index/harness-engineering/)
+- [Anthropic — Demystifying evals for AI agents](https://www.anthropic.com/engineering/demystifying-evals-for-ai-agents)
+- [Anthropic — Effective context engineering for AI agents](https://www.anthropic.com/engineering/effective-context-engineering-for-ai-agents)
+- [Anthropic — Effective harnesses for long-running agents](https://www.anthropic.com/engineering/effective-harnesses-for-long-running-agents)
+- [Anthropic — Building effective agents](https://www.anthropic.com/engineering/building-effective-agents)
+- [Anthropic — Equipping agents for the real world with Agent Skills](https://www.anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills)
+- [Addy Osmani — Loop Engineering](https://addyosmani.com/blog/loop-engineering/)
+- [LangChain — The Art of Loop Engineering](https://www.langchain.com/blog/the-art-of-loop-engineering)
+
+## 研究、知识与 Builder 工具
+
+- [OpenAI — Introducing Deep Research](https://openai.com/index/introducing-deep-research/)
+- [OpenAI Help — Deep Research in ChatGPT](https://help.openai.com/en/articles/10500283-deep-research-in-chatgpt)
+- [OpenAI — Introducing the Codex app](https://openai.com/index/introducing-the-codex-app/)
+- [OpenAI — The next evolution of the Agents SDK](https://openai.com/index/the-next-evolution-of-the-agents-sdk/)
+- [Google — NotebookLM Deep Research and new source types](https://blog.google/innovation-and-ai/models-and-research/google-labs/notebooklm-deep-research-file-types/)
+- [Google — Next-generation Gemini Deep Research](https://blog.google/innovation-and-ai/models-and-research/gemini-models/next-generation-gemini-deep-research/)
+- [Anthropic — Claude Code best practices](https://www.anthropic.com/engineering/claude-code-best-practices)
+- [Replit Agent Docs](https://docs.replit.com/references/agent/overview)
+- [Lovable Docs](https://docs.lovable.dev/introduction/welcome)
+
+## 中国互联网与 OS Agent 实践
+
+- [百度 Comate 4.0](https://cloud.baidu.com/doc/COMATE/s/xmm4hx69k)
+- [百度 Comate 自定义 Subagent](https://cloud.baidu.com/doc/COMATE/s/Rmfb62bhj)
+- [百度 Comate 2025 实践分享](https://comate.baidu.com/zh/news/news/19)
+- [腾讯 — 效率智能体工具集](https://www.tencent.com/zh-cn/articles/2202350.html)
+- [阿里云 — AI Coding 效率度量](https://developer.aliyun.com/article/1631168)
+- [钉钉 AI Agent](https://www.alibabacloud.com/blog/alibaba%E2%80%99s-dingtalk-hits-700m-users-and-unveils-ai-agent-to-boost-workspace-productivity_600754)
+- [飞书 AI 应用成熟度模型](https://www.feishu.cn/product/AI-Application-Maturity-Model)
+- [飞书 Aily](https://www.feishu.cn/content/article/7576921890476788922)
+- [美团 — 31 万行代码 AI 重构](https://tech.meituan.com/2026/05/07/Agent-AI-Coding.html)
+- [美团 — AI Coding 与单元测试](https://tech.meituan.com/2025/12/05/AI-Coding-Unit-Testing.html)
+- [京东 — 京点点 AIGC 平台](https://developer.jdcloud.com/article/4386)
+- [HarmonyOS AI / Intent / Agent Framework](https://developer.huawei.com/consumer/en/doc/atomic-guides/atomic-ai-development)
+- [HONOR Magic7 / YOYO Agent](https://www.honor.com/global/news/honor-magic7-china-launch/)
+- [vivo 意图框架](https://developers.vivo.com/doc/d/9ba4f52f9ecb40c08faefb4b8a50cf49)
+
+## Hackathon
+
+- [SuperAI NEXT Hackathon](https://www.superai.com/next-hackathon)
+- [SuperAI Agenda](https://www.superai.com/agenda)
+- [MLH Judging Plan](https://guide.mlh.io/general-information/judging-and-submissions/judging-plan)
+- [MLH Judges Communication and Recruiting](https://guide.mlh.io/general-information/judging-and-submissions/judges-communication-and-recruiting)
+- [Devpost — How to judge an online hackathon](https://help.devpost.com/article/103-how-to-judge-an-online-hackathon)
+- [Devpost — Internal Hackathon Template](https://info.devpost.com/guides/internal-hackathon-template)
+- [Devpost — Tips for planning your project](https://help.devpost.com/article/125-tips-for-planning-your-project)
+
+## GitHub 工具包参考
+
+- [phuryn/pm-skills](https://github.com/phuryn/pm-skills)
+- [deanpeters/Product-Manager-Skills](https://github.com/deanpeters/Product-Manager-Skills)
+- [deanpeters/product-manager-prompts](https://github.com/deanpeters/product-manager-prompts)
+- [Digidai/product-manager-skills](https://github.com/Digidai/product-manager-skills)
+- [product-on-purpose/pm-skills](https://github.com/product-on-purpose/pm-skills)
+- [anthropics/skills](https://github.com/anthropics/skills)
+- [github/spec-kit](https://github.com/github/spec-kit)
+- [modelcontextprotocol/servers](https://github.com/modelcontextprotocol/servers)
+- [openai/openai-agents-python](https://github.com/openai/openai-agents-python)
+- [langchain-ai/langgraph](https://github.com/langchain-ai/langgraph)
+- [langgenius/dify](https://github.com/langgenius/dify)
+- [n8n-io/n8n](https://github.com/n8n-io/n8n)
+- [browser-use/browser-use](https://github.com/browser-use/browser-use)
+- [slidevjs/slidev](https://github.com/slidevjs/slidev)
+- [marp-team/marp](https://github.com/marp-team/marp)
+
+---
+
+# 结语
+
+Prompt Engineering 教会我们把一次任务说清楚；Harness Engineering 教会我们为智能体提供可靠的工作环境；Loop Engineering 则提醒我们，真正的产品价值来自现实反馈不断进入下一轮。
+
+PM 不需要与模型比赛谁写得更快。PM 要做的是把用户、业务、技术和组织中的模糊性，转化为可执行的目标、可检查的证据、可运行的原型和可持续的闭环。
+
+> **最好的 PM，不只是使用 AI 的人，而是能够设计人和 AI 如何共同工作、共同验证、共同进化的人。**
