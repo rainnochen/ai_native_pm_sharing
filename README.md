@@ -2,7 +2,7 @@
 
 Harnesses, Loops, Skills and Builder Starters for Product Managers.
 
-AI Native PM Kit is an open toolkit for product managers who want to move from one-off AI prompts to reusable AI work systems. It supports the talk **AI 原生组织下的 PM 自进化实践** and packages its frameworks into templates that PMs can copy, edit, version, and run in real work.
+AI Native PM Kit is an open toolkit for product managers who want to move from one-off AI prompts to reusable AI work systems. It supports the course **AI 原生组织下的 PM 自进化实践** and packages its frameworks into templates that PMs can copy, edit, version, and run in real work.
 
 ## What This Is
 
@@ -14,12 +14,13 @@ This repository helps PMs build:
 - **AI Loops** for feedback-driven product decisions.
 - **Builder starters** for turning specs into demos.
 - **Hackathon Kit** for PM-led AI demos with repo, eval, decision log, and backup plan.
+- **Course development loop** for iterating the talk, slides, HTML, and toolkit as one system.
 
 It is not an AI tool directory, an auto-PRD wrapper, a fully autonomous production system, or a way to outsource product judgment to agents.
 
 ## Why PMs Need Harness / Loop / Builder Ability
 
-AI changes PM work from document production to system design:
+AI changes PM work from document production to system design. In an AI-native organization, PMs must design how humans, models, tools, data, feedback, and human gates work together:
 
 - **Prompt Engineering** helps you define one task clearly.
 - **Harness Engineering** connects context, skills, tools, rules, and evaluation.
@@ -41,7 +42,8 @@ The PM remains responsible for the problem, evidence, decision, and result.
 2. Pick one real task, such as PRD review, user feedback synthesis, or demo acceptance.
 3. Fill [`context/project-brief.md`](context/project-brief.md).
 4. Run one skill from [`skills/`](skills/README.md).
-5. Use [`loops/pm-loop-canvas.md`](loops/pm-loop-canvas.md) to define the next feedback cycle.
+5. Use [`prompts/ask-before-answer.md`](prompts/ask-before-answer.md) when facts are missing.
+6. Use [`loops/pm-loop-canvas.md`](loops/pm-loop-canvas.md) to define the next feedback cycle.
 
 ## Repository Structure
 

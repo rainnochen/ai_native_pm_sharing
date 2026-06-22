@@ -567,6 +567,44 @@
     .artifact-line.mid { width: 78%; }
     .artifact-line.red { background: rgba(227, 77, 50, .36); }
 
+    .prompt-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+      margin-top: 70px;
+    }
+
+    .prompt-box {
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      background: var(--paper-2);
+      padding: 34px;
+      min-height: 410px;
+      font-size: 30px;
+      line-height: 1.34;
+      font-weight: 760;
+      white-space: pre-wrap;
+    }
+
+    .prompt-box.bad {
+      border-color: rgba(227, 77, 50, .75);
+      background: rgba(227, 77, 50, .08);
+    }
+
+    .prompt-box.good {
+      border-color: rgba(21, 128, 61, .75);
+      background: rgba(21, 128, 61, .08);
+    }
+
+    .prompt-box .prompt-title {
+      display: block;
+      margin-bottom: 24px;
+      font-size: 22px;
+      color: var(--muted);
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
     .path-canvas {
       position: absolute;
       inset: 0;
@@ -674,6 +712,68 @@
         </div>
         <div class="footer"><span>组织能力 = 快速试错 + 快速更新共识</span><span class="number"></span></div>
         <aside class="notes">强调不确定性本身就是现实。组织不应追求一次性答案，而要提升试验、验证、更新共识的速度。</aside>
+      </section>
+
+      <section class="slide dark">
+        <div class="eyebrow">AI Native Organization</div>
+        <p class="statement small">AI 原生组织，<br>不是“用了 AI 工具”。</p>
+        <p class="subtitle">而是把大模型作为默认生产力、默认协作对象、默认执行系统。</p>
+        <div class="footer"><span>组织变化先于工具清单</span><span class="number"></span></div>
+        <aside class="notes">这里建立定义：AI 原生组织不是采购工具，而是重新设计信息、任务、知识、工具、评估、人类决策和反馈如何运行。</aside>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">PM Definition Shift</div>
+        <p class="statement small">PM 不只是写需求，<br>而是设计 <span class="accent">价值交易</span> 与 <span class="accent">协作系统</span>。</p>
+        <div class="grid-2">
+          <div class="mini-card"><div class="label">传统 PM</div><div class="big">理解用户，判断价值，设计交易，推动落地。</div></div>
+          <div class="mini-card"><div class="label">AI 原生 PM</div><div class="big">再多一层：设计人、模型、工具、数据、反馈的协作系统。</div></div>
+        </div>
+        <div class="footer"><span>借用俞军产品方法论的用户价值 / 交易视角</span><span class="number"></span></div>
+        <aside class="notes">不要把俞军讲成引用背诵。借用用户价值和交易视角说明：PM 原本就不是文档岗位，AI 时代只是让系统设计责任更明显。</aside>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Software Development Shift</div>
+        <h2>软件开发的对象变了</h2>
+        <div class="diagram">
+          <div class="diagram-row"><div class="left">传统</div><div class="right">需求 → 设计 → 研发 → 测试 → 上线</div></div>
+          <div class="diagram-row"><div class="left">AI 原生</div><div class="right">意图 → 上下文 → 工具调用 → 评估 → 人类闸门 → 持续 Loop</div></div>
+          <div class="diagram-row"><div class="left">PM 新交付</div><div class="right">Intent、Tool Contract、Eval、Fallback、Human Gate</div></div>
+        </div>
+        <div class="footer"><span>PRD 仍重要，但不再足够</span><span class="number"></span></div>
+        <aside class="notes">讲差异：传统软件更像确定性流程，AI 原生产品多了不确定的模型行为、工具权限、状态、评估和回退。</aside>
+      </section>
+
+      <section class="slide dark">
+        <div class="eyebrow">LLM Basics</div>
+        <p class="statement small">大模型不是数据库。<br>它很擅长 <span class="accent">补全</span>。</p>
+        <p class="subtitle">给定上下文，它预测下一个最可能的 token，并持续生成下去。</p>
+        <div class="footer"><span>所以它会猜，也会把假设写得像事实</span><span class="number"></span></div>
+        <aside class="notes">给小白解释：token 可以粗略理解为文字片段。它不是天然从事实库取答案，而是在上下文和训练模式中生成最可能合理的回答。</aside>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">Interaction Demo</div>
+        <h2>不要急着让模型回答。<br>先让它问你。</h2>
+        <div class="prompt-pair">
+          <div class="prompt-box bad"><span class="prompt-title">容易出问题</span>帮我写一份 AI 餐厅推荐 Agent 的 PRD。</div>
+          <div class="prompt-box good"><span class="prompt-title">更好的方式</span>请不要直接写 PRD。先问我 10 个必须知道的问题，并把已知事实 / 待确认假设 / 高风险缺口分开列出来。</div>
+        </div>
+        <div class="footer"><span>让模型暴露不确定，而不是替你补齐事实</span><span class="number"></span></div>
+        <aside class="notes">这里可以现场演示。核心不是 prompt 技巧，而是 PM 把模型从“答案机”改造成“澄清问题的协作者”。</aside>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">PM Workbench</div>
+        <p class="statement small">Prompt 是一次对话。<br>Harness 是你的 <span class="accent">PM 工作台</span>。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">Context</div><div class="big">业务背景<br>术语口径<br>决策日志</div></div>
+          <div class="mini-card"><div class="label">Skills</div><div class="big">调研<br>PRD Critic<br>实验设计</div></div>
+          <div class="mini-card"><div class="label">Tools</div><div class="big">Comate<br>度 Cici / 度度<br>GitHub Kit</div></div>
+        </div>
+        <div class="footer"><span>内部工具细节以合规可分享版本为准</span><span class="number"></span></div>
+        <aside class="notes">这一页讲你的实践：不是介绍工具清单，而是这些工具如何被组织进 PM Harness。Comate 负责 Builder/Demo/工程协同，度 Cici/度度负责知识和材料协同，GitHub Kit 负责可复制工作台。</aside>
       </section>
 
       <section class="slide">
@@ -934,7 +1034,7 @@
 
   <div class="controls" aria-label="presentation controls">
     <button id="prev" type="button">←</button>
-    <span id="counter">1 / 24</span>
+    <span id="counter">1 / 30</span>
     <button id="next" type="button">→</button>
     <button id="toggleNotes" type="button">备注</button>
     <span>Space 翻页 · F 全屏 · N 备注</span>

@@ -52,9 +52,17 @@
 
 - [x] Define `loops/course-development-loop.md`.
 - [x] Define `prompts/course-development-loop-prompt.md`.
-- [ ] Add course section: What is AI Native Organization.
-- [ ] Add course section: PM definition shift from traditional PM to AI-native PM.
-- [ ] Add course section: LLM basics for non-technical PMs.
-- [ ] Add demo: ask the model to ask questions before answering.
-- [ ] Add Baidu internal PM Harness section with safe placeholders for Comate / 度 Cici / 度度.
-- [ ] Research and integrate open PM Skills references into toolkit attribution and roadmap.
+- [x] Add course section: What is AI Native Organization.
+- [x] Add course section: PM definition shift from traditional PM to AI-native PM.
+- [x] Add course section: LLM basics for non-technical PMs.
+- [x] Add demo: ask the model to ask questions before answering.
+- [x] Add Baidu internal PM Harness section with safe placeholders for Comate / 度 Cici / 度度.
+- [x] Research and integrate open PM Skills references into toolkit attribution and roadmap.
+
+## Phase 6: Next Course Iterations
+
+- [ ] Add a filled sample project for the Ask Before Answer prompt.
+- [ ] Add QR code / GitHub Pages URL to HTML slides.
+- [ ] Add visual diagram for traditional software vs AI-native software development.
+- [ ] Add speaker script for the first 10 minutes.
+- [ ] Add public-safe internal tool screenshots only after approval.
