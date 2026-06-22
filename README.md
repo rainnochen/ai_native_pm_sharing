@@ -46,6 +46,12 @@ The PM remains responsible for the problem, evidence, decision, and result.
 6. Use [`loops/pm-loop-canvas.md`](loops/pm-loop-canvas.md) to define the next feedback cycle.
 7. Use [`loops/loop-contract.md`](loops/loop-contract.md) before turning the cycle into automation.
 
+## Live Demo Path
+
+To turn this repository into your own PM workbench, open [`00-quickstart/build-your-pm-workbench.md`](00-quickstart/build-your-pm-workbench.md).
+
+It covers copying the repo, seeding safe context, importing approved knowledge into a private workbench, committing the workbench state, running one skill, writing a loop contract, and using the hackathon kit.
+
 ## Repository Structure
 
 ```text

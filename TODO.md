@@ -65,6 +65,9 @@
 - [x] Add Loop readiness checks: repeated task, verifiable outcome, reproducible evidence, budget, human review.
 - [x] Add `loops/loop-contract.md` for trigger, objective, scope, tools, verification, stop rules, escalation, state, and cleanup.
 - [x] Add Builder idea: when code gets cheaper, product judgment, scope discipline, trust, and verification get more expensive.
+- [x] Restructure course into three parts: AI-native PM, GitHub workbench practice, Builder/Hackathon.
+- [x] Add live demo guide for building a PM Workbench from the GitHub repository.
+- [x] Add safe placeholder flow for importing approved knowledge with internal tools such as 如流 CLI.
 - [ ] Add a filled sample project for the Ask Before Answer prompt.
 - [ ] Add QR code / GitHub Pages URL to HTML slides.
 - [ ] Add visual diagram for traditional software vs AI-native software development.

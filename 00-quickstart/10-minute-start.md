@@ -2,6 +2,8 @@
 
 Purpose: start one small AI-assisted PM workflow without building a platform.
 
+If you want to build a full personal or team PM workbench from this repository, use [`build-your-pm-workbench.md`](build-your-pm-workbench.md) after this quick start.
+
 ## Minute 0-2: Pick One Real Task
 
 Choose one task that will happen this week:

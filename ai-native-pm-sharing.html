@@ -714,6 +714,18 @@
         <aside class="notes">强调不确定性本身就是现实。组织不应追求一次性答案，而要提升试验、验证、更新共识的速度。</aside>
       </section>
 
+      <section class="slide">
+        <div class="eyebrow">Course Map</div>
+        <h2>今天分三段。</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">Part 1</div><div class="big">AI 原生组织下<br>PM 要怎么做</div></div>
+          <div class="mini-card"><div class="label">Part 2</div><div class="big">用 GitHub 仓库<br>搭自己的工作台</div></div>
+          <div class="mini-card"><div class="label">Part 3</div><div class="big">成为 Builder<br>参加 Hackathon</div></div>
+        </div>
+        <div class="footer"><span>先建立认知，再手把手搭工作流，最后进入 Builder 训练场</span><span class="number"></span></div>
+        <aside class="notes">这里把整场课重新分成三幕：第一幕讲 AI 原生组织和 PM 新职责；第二幕现场演示 GitHub Workbench；第三幕宣传内部 Hackathon，并展示 Hackathon 工作台怎么用。</aside>
+      </section>
+
       <section class="slide dark">
         <div class="eyebrow">AI Native Organization</div>
         <p class="statement small">AI 原生组织，<br>不是“用了 AI 工具”。</p>
@@ -724,13 +736,14 @@
 
       <section class="slide">
         <div class="eyebrow">PM Definition Shift</div>
-        <p class="statement small">PM 不只是写需求，<br>而是设计 <span class="accent">价值交易</span> 与 <span class="accent">协作系统</span>。</p>
-        <div class="grid-2">
-          <div class="mini-card"><div class="label">传统 PM</div><div class="big">理解用户，判断价值，设计交易，推动落地。</div></div>
-          <div class="mini-card"><div class="label">AI 原生 PM</div><div class="big">再多一层：设计人、模型、工具、数据、反馈的协作系统。</div></div>
+        <p class="statement small">PM 的变化，<br>不是推翻旧定义，<br>而是 <span class="accent">多了一层系统责任</span>。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">误解</div><div class="big">写需求<br>排优先级<br>催项目</div></div>
+          <div class="mini-card"><div class="label">成熟 PM</div><div class="big">理解用户<br>判断价值<br>设计交易</div></div>
+          <div class="mini-card"><div class="label">AI 原生 PM</div><div class="big">设计人机工具数据反馈的协作系统</div></div>
         </div>
         <div class="footer"><span>借用俞军产品方法论的用户价值 / 交易视角</span><span class="number"></span></div>
-        <aside class="notes">不要把俞军讲成引用背诵。借用用户价值和交易视角说明：PM 原本就不是文档岗位，AI 时代只是让系统设计责任更明显。</aside>
+        <aside class="notes">不要把俞军讲成引用背诵。借用用户价值和交易视角说明：PM 原本就不是文档岗位，而是在用户价值、商业目标和组织能力之间找到可成立的产品解。AI 时代不是把 PM 变成算法工程师，而是让 PM 还要设计 Intent、Context、Tool Contract、Eval、Human Gate 和 Loop。</aside>
       </section>
 
       <section class="slide">
@@ -982,6 +995,32 @@
         <aside class="notes">这页留给你讲具体业务场景。注意强调 Human Gate：优先级、用户承诺、上线决策仍由人负责。</aside>
       </section>
 
+      <section class="slide">
+        <div class="eyebrow">Toolkit</div>
+        <h2>把一次分享，变成可复用资产</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">context/</div><div class="big">业务上下文</div></div>
+          <div class="mini-card"><div class="label">skills/</div><div class="big">PM 可复用能力</div></div>
+          <div class="mini-card"><div class="label">hackathon-kit/</div><div class="big">Repo + Demo + Eval</div></div>
+        </div>
+        <div class="quote" style="font-size:42px;">`rainnochen/ai_native_pm_sharing`：产品化名称是 AI Native PM Kit。</div>
+        <div class="footer"><span>GitHub: rainnochen/ai_native_pm_sharing · 二维码待补</span><span class="number"></span></div>
+        <aside class="notes">强调它不是 Prompt 合集，而是 00-quickstart、context、skills、harness、loops、hackathon-kit、evals、scripts 组成的可版本化工作资产。</aside>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">GitHub Workbench Demo</div>
+        <h2>怎么把仓库变成自己的 PM 工作台？</h2>
+        <div class="diagram">
+          <div class="diagram-row"><div class="left">1. Copy</div><div class="right">Fork / Clone 到个人或团队私有仓库</div></div>
+          <div class="diagram-row"><div class="left">2. Context</div><div class="right">填 Project Brief、Glossary、Decision Log</div></div>
+          <div class="diagram-row"><div class="left">3. Knowledge</div><div class="right">用如流 CLI 等内部工具导入合规知识摘要</div></div>
+          <div class="diagram-row"><div class="left">4. Commit</div><div class="right">把工作台状态版本化，再跑 Skill 和 Loop</div></div>
+        </div>
+        <div class="footer"><span>入口：00-quickstart/build-your-pm-workbench.md</span><span class="number"></span></div>
+        <aside class="notes">这里现场演示 GitHub 仓库怎么用。强调公开仓库只放模板，真实业务上下文要进入私有仓库或内部 Git；如流 CLI 的命令用内部批准版本，不在公开材料写死。</aside>
+      </section>
+
       <section class="slide dark">
         <div class="eyebrow">Builder</div>
         <p class="statement">当 Demo 成本下降，<br>PM 不能只做需求传递者。</p>
@@ -1031,16 +1070,15 @@
       </section>
 
       <section class="slide">
-        <div class="eyebrow">Toolkit</div>
-        <h2>把一次分享，变成可复用资产</h2>
+        <div class="eyebrow">Hackathon Workbench</div>
+        <h2>Hackathon 不只交 PPT。<br>交一个能跑的工作台。</h2>
         <div class="grid-3">
-          <div class="mini-card"><div class="label">context/</div><div class="big">业务上下文</div></div>
-          <div class="mini-card"><div class="label">skills/</div><div class="big">PM 可复用能力</div></div>
-          <div class="mini-card"><div class="label">hackathon-kit/</div><div class="big">Repo + Demo + Eval</div></div>
+          <div class="mini-card"><div class="label">Before</div><div class="big">Problem<br>Team<br>Risk</div></div>
+          <div class="mini-card"><div class="label">Build</div><div class="big">Demo Spine<br>Repo<br>Eval</div></div>
+          <div class="mini-card"><div class="label">Pitch</div><div class="big">Decision Log<br>Backup Plan<br>Judging Rubric</div></div>
         </div>
-        <div class="quote" style="font-size:42px;">`rainnochen/ai_native_pm_sharing`：产品化名称是 AI Native PM Kit。</div>
-        <div class="footer"><span>GitHub: rainnochen/ai_native_pm_sharing · 二维码待补</span><span class="number"></span></div>
-        <aside class="notes">强调它不是 Prompt 合集，而是 00-quickstart、context、skills、harness、loops、hackathon-kit、evals、scripts 组成的可版本化工作资产。</aside>
+        <div class="footer"><span>入口：hackathon-kit/ · 用内部 Hackathon 训练 Builder PM</span><span class="number"></span></div>
+        <aside class="notes">这一页用于宣传百度内部 Hackathon：不是“技术同学写代码、PM 做 PPT”，而是让 PM 学会选题、压缩范围、搭 Demo、做 Eval、准备备份方案。</aside>
       </section>
 
       <section class="slide dark">
@@ -1051,8 +1089,8 @@
           <div class="item"><span class="bullet">2</span><span>填 Project Brief，跑一个 Skill</span></div>
           <div class="item"><span class="bullet">3</span><span>设计 Loop，记录 Decision Log</span></div>
         </div>
-        <div class="footer"><span>入口：00-quickstart/10-minute-start.md</span><span class="number"></span></div>
-        <aside class="notes">行动清单不要太多。强调从 00-quickstart/10-minute-start.md 开始：选任务、填 context/project-brief.md、跑 skills/、用 loops/pm-loop-canvas.md 设计下一轮。</aside>
+        <div class="footer"><span>入口：00-quickstart/10-minute-start.md + build-your-pm-workbench.md</span><span class="number"></span></div>
+        <aside class="notes">行动清单不要太多。强调从 00-quickstart/10-minute-start.md 开始：选任务、填 context/project-brief.md、跑 skills/、用 loops/pm-loop-canvas.md 设计下一轮。想搭完整工作台，就进入 build-your-pm-workbench.md。</aside>
       </section>
 
       <section class="slide dark">
@@ -1070,7 +1108,7 @@
 
   <div class="controls" aria-label="presentation controls">
     <button id="prev" type="button">←</button>
-    <span id="counter">1 / 33</span>
+    <span id="counter">1 / 36</span>
     <button id="next" type="button">→</button>
     <button id="toggleNotes" type="button">备注</button>
     <span>Space 翻页 · F 全屏 · N 备注</span>
