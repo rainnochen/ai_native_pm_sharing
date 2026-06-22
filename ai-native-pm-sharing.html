@@ -164,6 +164,104 @@
 
     .dark .subtitle { color: rgba(255, 250, 241, .72); }
 
+    .visual-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: .9;
+    }
+
+    .visual-shade {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(90deg, rgba(18, 17, 16, .92) 0%, rgba(18, 17, 16, .72) 38%, rgba(18, 17, 16, .18) 100%),
+        linear-gradient(180deg, rgba(18, 17, 16, .25), rgba(18, 17, 16, .5));
+    }
+
+    .slide.visual .eyebrow,
+    .slide.visual .footer,
+    .slide.visual .subtitle { color: rgba(255, 250, 241, .78); }
+
+    .slide.visual h1,
+    .slide.visual h2,
+    .slide.visual .statement { color: var(--paper-2); }
+
+    .visual-split {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 70px;
+      align-items: center;
+      margin-top: 74px;
+    }
+
+    .visual-card {
+      border: 2px solid rgba(255, 250, 241, .18);
+      background: rgba(23, 22, 21, .48);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 32px 90px rgba(0,0,0,.28);
+    }
+
+    .visual-card img {
+      display: block;
+      width: 100%;
+      height: 470px;
+      object-fit: cover;
+    }
+
+    .visual-caption {
+      padding: 24px 28px;
+      color: rgba(255, 250, 241, .78);
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    .qr-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 34px;
+      margin-top: 70px;
+    }
+
+    .qr-card {
+      border: 2px solid rgba(255, 250, 241, .18);
+      background: rgba(255, 250, 241, .08);
+      border-radius: 10px;
+      padding: 28px;
+      min-height: 520px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 22px;
+    }
+
+    .qr-card .label {
+      font-size: 24px;
+      font-weight: 950;
+      color: var(--paper-2);
+    }
+
+    .qr-card img {
+      width: 100%;
+      height: 340px;
+      object-fit: contain;
+      background: #fff;
+      border-radius: 8px;
+      padding: 18px;
+    }
+
+    .qr-card .hint {
+      font-size: 22px;
+      line-height: 1.35;
+      color: rgba(255, 250, 241, .68);
+      font-weight: 720;
+    }
+
     .statement {
       margin-top: 118px;
       font-size: 90px;
@@ -615,7 +713,7 @@
       z-index: 0;
     }
 
-    .slide > *:not(.path-canvas):not(.footer):not(.progress) {
+    .slide > *:not(.path-canvas):not(.visual-bg):not(.visual-shade):not(.footer):not(.progress) {
       position: relative;
       z-index: 1;
     }
@@ -726,7 +824,9 @@
         <aside class="notes">这里把整场课重新分成三幕：第一幕讲 AI 原生组织和 PM 新职责；第二幕现场演示 GitHub Workbench；第三幕宣传内部 Hackathon，并展示 Hackathon 工作台怎么用。</aside>
       </section>
 
-      <section class="slide dark">
+      <section class="slide dark visual">
+        <img class="visual-bg" src="assets/visuals/ai-native-organization.png" alt="">
+        <div class="visual-shade"></div>
         <div class="eyebrow">AI Native Organization</div>
         <p class="statement small">AI 原生组织，<br>不是“用了 AI 工具”。</p>
         <p class="subtitle">而是把大模型作为默认生产力、默认协作对象、默认执行系统。</p>
@@ -735,15 +835,27 @@
       </section>
 
       <section class="slide">
-        <div class="eyebrow">PM Definition Shift</div>
-        <p class="statement small">PM 的变化，<br>不是推翻旧定义，<br>而是 <span class="accent">多了一层系统责任</span>。</p>
+        <div class="eyebrow">Yu Jun Lens</div>
+        <p class="statement small">成熟 PM，<br>不是写需求的人，<br>而是 <span class="accent">设计价值交换</span> 的人。</p>
         <div class="grid-3">
-          <div class="mini-card"><div class="label">误解</div><div class="big">写需求<br>排优先级<br>催项目</div></div>
-          <div class="mini-card"><div class="label">成熟 PM</div><div class="big">理解用户<br>判断价值<br>设计交易</div></div>
-          <div class="mini-card"><div class="label">AI 原生 PM</div><div class="big">设计人机工具数据反馈的协作系统</div></div>
+          <div class="mini-card"><div class="label">用户价值</div><div class="big">新体验<br>- 旧体验<br>- 替换成本</div></div>
+          <div class="mini-card"><div class="label">交易成立</div><div class="big">用户付出<br>组织承接<br>长期收益</div></div>
+          <div class="mini-card"><div class="label">PM 责任</div><div class="big">理解用户<br>判断价值<br>推动落地</div></div>
         </div>
-        <div class="footer"><span>借用俞军产品方法论的用户价值 / 交易视角</span><span class="number"></span></div>
-        <aside class="notes">不要把俞军讲成引用背诵。借用用户价值和交易视角说明：PM 原本就不是文档岗位，而是在用户价值、商业目标和组织能力之间找到可成立的产品解。AI 时代不是把 PM 变成算法工程师，而是让 PM 还要设计 Intent、Context、Tool Contract、Eval、Human Gate 和 Loop。</aside>
+        <div class="footer"><span>借用俞军产品方法论的用户价值 / 交易 / 替换成本视角</span><span class="number"></span></div>
+        <aside class="notes">这里不要讲成书摘，而是借用底层视角：用户不会因为我们写了 PRD 而行动，用户只会在新体验足够好、替换成本可接受、交易对自己有利时行动。所以成熟 PM 的底层任务，是判断什么价值值得创造，并设计一笔用户和组织都能成立的交易。</aside>
+      </section>
+
+      <section class="slide">
+        <div class="eyebrow">PM Definition Shift</div>
+        <p class="statement small">AI 时代的 PM，<br>不是少了一层职责，<br>而是 <span class="accent">多了一个设计对象</span>。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">过去</div><div class="big">设计用户<br>产品<br>业务之间的交易</div></div>
+          <div class="mini-card"><div class="label">现在</div><div class="big">设计人<br>模型<br>工具之间的协作</div></div>
+          <div class="mini-card"><div class="label">新增交付</div><div class="big">Context<br>Contract<br>Eval / Loop</div></div>
+        </div>
+        <div class="footer"><span>旧能力没有失效，只是 PRD 不再足够</span><span class="number"></span></div>
+        <aside class="notes">这一页回答“PM 到 AI 时代发生了什么改变”。不是从业务 PM 变成算法工程师，而是在原有用户价值和交易设计之上，新增对人机协同系统的设计责任：意图怎样进入模型，上下文怎样组织，工具权限怎样约束，结果怎样验证，失败怎样升级给人，反馈怎样进入下一轮。</aside>
       </section>
 
       <section class="slide">
@@ -1008,14 +1120,20 @@
         <aside class="notes">强调它不是 Prompt 合集，而是 00-quickstart、context、skills、harness、loops、hackathon-kit、evals、scripts 组成的可版本化工作资产。</aside>
       </section>
 
-      <section class="slide">
+      <section class="slide dark">
         <div class="eyebrow">GitHub Workbench Demo</div>
         <h2>怎么把仓库变成自己的 PM 工作台？</h2>
-        <div class="diagram">
-          <div class="diagram-row"><div class="left">1. Copy</div><div class="right">Fork / Clone 到个人或团队私有仓库</div></div>
-          <div class="diagram-row"><div class="left">2. Context</div><div class="right">填 Project Brief、Glossary、Decision Log</div></div>
-          <div class="diagram-row"><div class="left">3. Knowledge</div><div class="right">用如流 CLI 等内部工具导入合规知识摘要</div></div>
-          <div class="diagram-row"><div class="left">4. Commit</div><div class="right">把工作台状态版本化，再跑 Skill 和 Loop</div></div>
+        <div class="visual-split">
+          <div class="big-list" style="margin-top:0;">
+            <div class="item"><span class="bullet">1</span><span>Fork / Clone 到私有仓库</span></div>
+            <div class="item"><span class="bullet">2</span><span>填 Project Brief、Glossary、Decision Log</span></div>
+            <div class="item"><span class="bullet">3</span><span>用如流 CLI 导入合规知识摘要</span></div>
+            <div class="item"><span class="bullet">4</span><span>Commit 工作台状态，再跑 Skill 和 Loop</span></div>
+          </div>
+          <div class="visual-card">
+            <img src="assets/visuals/pm-workbench.png" alt="">
+            <div class="visual-caption">把 PM 的上下文、判断、任务和反馈沉淀成一个可版本化的工作系统。</div>
+          </div>
         </div>
         <div class="footer"><span>入口：00-quickstart/build-your-pm-workbench.md</span><span class="number"></span></div>
         <aside class="notes">这里现场演示 GitHub 仓库怎么用。强调公开仓库只放模板，真实业务上下文要进入私有仓库或内部 Git；如流 CLI 的命令用内部批准版本，不在公开材料写死。</aside>
@@ -1055,7 +1173,9 @@
         <aside class="notes">让听众自评自己在第几层。不要把它讲成职级，而是能力成熟度。</aside>
       </section>
 
-      <section class="slide">
+      <section class="slide dark visual">
+        <img class="visual-bg" src="assets/visuals/hackathon-builder.png" alt="">
+        <div class="visual-shade"></div>
         <div class="eyebrow">Hackathon</div>
         <p class="statement small">Hackathon 是 PM 从表达者变成创造者的高压训练场。</p>
         <div class="tags">
@@ -1094,12 +1214,27 @@
       </section>
 
       <section class="slide dark">
-        <canvas class="path-canvas"></canvas>
         <div class="eyebrow">Closing</div>
-        <p class="statement">不要只问 AI 能替你做什么。<br><span class="accent">开始设计共同进化的系统。</span></p>
-        <p class="subtitle">PM 对问题、证据和结果负责。</p>
+        <h2>最后，带走三件事。</h2>
+        <div class="qr-grid">
+          <div class="qr-card">
+            <div class="label">签到</div>
+            <img src="assets/qr/sign-in.png" alt="签到二维码">
+            <div class="hint">先签到，留下参与记录。</div>
+          </div>
+          <div class="qr-card">
+            <div class="label">交流</div>
+            <img src="assets/qr/wechat.jpg" alt="微信二维码">
+            <div class="hint">加微信，后续一起共创 PM Workbench。</div>
+          </div>
+          <div class="qr-card">
+            <div class="label">评价</div>
+            <img src="assets/qr/feedback.png" alt="评价二维码">
+            <div class="hint">填写反馈，帮助我更新下一版课程。</div>
+          </div>
+        </div>
         <div class="footer"><span>AI 原生组织下的 PM 自进化实践</span><span class="number"></span></div>
-        <aside class="notes">最后三句话回收：Prompt 说清楚，Harness 做稳定，Loop 跑持续。PM 最终对决策负责。</aside>
+        <aside class="notes">最后三句话回收：Prompt 说清楚，Harness 做稳定，Loop 跑持续。PM 最终对问题、证据和结果负责。二维码分别用于签到、后续交流和课程反馈。</aside>
       </section>
 
       <div class="progress" id="progress"></div>
@@ -1108,7 +1243,7 @@
 
   <div class="controls" aria-label="presentation controls">
     <button id="prev" type="button">←</button>
-    <span id="counter">1 / 36</span>
+    <span id="counter">1 / 37</span>
     <button id="next" type="button">→</button>
     <button id="toggleNotes" type="button">备注</button>
     <span>Space 翻页 · F 全屏 · N 备注</span>
