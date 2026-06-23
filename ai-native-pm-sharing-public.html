@@ -901,22 +901,30 @@
     .harness-visual-layout .diagram {
       margin-top: 0;
       max-width: none;
+      display: grid;
+      grid-template-rows: repeat(4, minmax(0, 1fr));
+      height: 100%;
     }
 
     .harness-visual-layout .diagram-row {
-      grid-template-columns: 190px 1fr;
-      min-height: 92px;
+      grid-template-columns: 176px 1fr;
+      min-height: 0;
     }
 
     .harness-visual-layout .diagram-row .left {
-      font-size: 24px;
-      padding: 24px 24px;
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      padding: 18px 22px;
     }
 
     .harness-visual-layout .diagram-row .right {
-      font-size: 24px;
-      line-height: 1.28;
-      padding: 24px 26px;
+      display: flex;
+      align-items: center;
+      font-size: 22px;
+      line-height: 1.34;
+      padding: 18px 24px;
+      font-weight: 680;
     }
 
     .harness-visual-card {
@@ -1495,31 +1503,56 @@
       <section class="slide density-medium">
         <div class="eyebrow">Toolkit</div>
         <h2>把一次分享，变成可复用资产</h2>
-        <div class="grid-3">
-          <div class="mini-card"><div class="label">context/</div><div class="big">业务上下文</div></div>
-          <div class="mini-card"><div class="label">skills/</div><div class="big">PM 可复用能力</div></div>
-          <div class="mini-card"><div class="label">hackathon-kit/</div><div class="big">Repo + Demo + Eval</div></div>
+        <div class="grid-4">
+          <div class="mini-card"><div class="label">00-quickstart/</div><div class="big">10 分钟<br>启动</div></div>
+          <div class="mini-card"><div class="label">workspace-starter/</div><div class="big">项目<br>工作台</div></div>
+          <div class="mini-card"><div class="label">skills/ + loops/</div><div class="big">复用能力<br>反馈闭环</div></div>
+          <div class="mini-card"><div class="label">13_compliance/</div><div class="big">分级<br>Human Gate</div></div>
         </div>
         <div class="quote" style="font-size:42px;">AI Native PM Kit：一套可复制的 PM 工作系统。</div>
-        <div class="footer"><span>Repo: rainnochen/ai_native_pm_sharing · 现场演示从 00-quickstart 开始</span><span class="number"></span></div>
+        <div class="footer"><span>Repo: rainnochen/ai_native_pm_sharing · 先跑小任务，再复制 Starter Kit</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">10-Minute Start</div>
+        <h2>工具包第一轮，只做六步。</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">1-2</div><div class="big">打开仓库<br>选一个任务</div><div class="body">需求评审、PRD 检查、用户反馈、实验复盘都适合。</div></div>
+          <div class="mini-card"><div class="label">3-4</div><div class="big">填 Brief<br>登记来源</div><div class="body">写清目标、用户、指标、事实、假设和证据来源。</div></div>
+          <div class="mini-card"><div class="label">5-6</div><div class="big">跑 Skill<br>记 Decision</div><div class="body">用一个 Skill 产出建议，把采纳、搁置和风险写回日志。</div></div>
+        </div>
+        <div class="footer"><span>入口：00-quickstart/10-minute-start.md</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-high">
+        <div class="eyebrow">7-Day Pilot</div>
+        <h2>完整试点，用一周跑成工作台。</h2>
+        <div class="grid-4">
+          <div class="mini-card"><div class="label">Day 1-2</div><div class="big">定任务<br>做分级</div><div class="body">选高频场景，按 L0-L3 标注数据和工具边界。</div></div>
+          <div class="mini-card"><div class="label">Day 3-4</div><div class="big">补上下文<br>跑 Skill</div><div class="body">把 Brief、Source Registry、PRD 或原型验收跑通。</div></div>
+          <div class="mini-card"><div class="label">Day 5-6</div><div class="big">加 Eval<br>走 Gate</div><div class="body">设计 golden cases，记录 Human Gate 和失败样本。</div></div>
+          <div class="mini-card"><div class="label">Day 7</div><div class="big">复盘<br>发 Memo</div><div class="body">输出决策备忘录，决定继续、调整或停止。</div></div>
+        </div>
+        <div class="footer"><span>入口：00-quickstart/ide-workbench-7-day-pilot.md + ai-native-pm-workspace-starter/</span><span class="number"></span></div>
       </section>
 
       <section class="slide dark density-high">
         <div class="eyebrow">Local Workbench Demo</div>
-        <h2>怎么把本地文件夹变成自己的 PM 工作台？</h2>
+        <h2>现场演示，只打开四个位置。</h2>
         <div class="visual-split">
           <div class="big-list" style="margin-top:0;">
-            <div class="item"><span class="bullet">1</span><span>打开本地 PM Kit 文件夹</span></div>
-            <div class="item"><span class="bullet">2</span><span>填 Project Brief、Glossary、Decision Log</span></div>
-            <div class="item"><span class="bullet">3</span><span>导入已批准的知识摘要</span></div>
-            <div class="item"><span class="bullet">4</span><span>Commit 工作台状态，再跑 Skill 和 Loop</span></div>
+            <div class="item"><span class="bullet">1</span><span>README.zh-CN.md：讲清仓库地图</span></div>
+            <div class="item"><span class="bullet">2</span><span>00-quickstart/10-minute-start.md：现场启动</span></div>
+            <div class="item"><span class="bullet">3</span><span>ai-native-pm-workspace-starter/README.md：复制工作台</span></div>
+            <div class="item"><span class="bullet">4</span><span>13_compliance/DATA_CLASSIFICATION.md：先分级再使用</span></div>
+            <div class="item"><span class="bullet">5</span><span>npm run validate：证明工具包完整</span></div>
           </div>
           <div class="visual-card">
             <img src="assets/visuals/pm-workbench.png" alt="">
             <div class="visual-caption">把 PM 的上下文、判断、任务和反馈沉淀成一个可版本化的工作系统。</div>
           </div>
         </div>
-        <div class="footer"><span>入口：00-quickstart/build-your-pm-workbench.md</span><span class="number"></span></div>
+        <div class="footer"><span>演示原则：公开模板在 GitHub，真实业务上下文进私有工作区</span><span class="number"></span></div>
       </section>
 
       <section class="slide dark visual density-low">
@@ -1611,7 +1644,7 @@
 
   <div class="controls" aria-label="presentation controls">
     <button id="prev" type="button">←</button>
-    <span id="counter">1 / 34</span>
+    <span id="counter">1 / 36</span>
     <button id="next" type="button">→</button>
     <button id="toggleNotes" type="button">备注</button>
     <span>Space 翻页 · F 全屏 · N 备注</span>
