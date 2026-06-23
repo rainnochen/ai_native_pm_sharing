@@ -438,6 +438,62 @@
       font-weight: 650;
     }
 
+    .evo-matrix {
+      margin-top: 58px;
+      display: grid;
+      grid-template-columns: 170px repeat(4, 1fr);
+      border: 3px solid var(--ink);
+      background: rgba(255, 250, 241, .66);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 1660px;
+    }
+
+    .evo-head,
+    .evo-label,
+    .evo-cell {
+      border-right: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      min-height: 110px;
+      padding: 24px 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .evo-head {
+      min-height: 78px;
+      background: var(--ink);
+      color: var(--paper-2);
+      font-size: 27px;
+      line-height: 1.1;
+      font-weight: 950;
+    }
+
+    .evo-label {
+      background: rgba(227, 77, 50, .08);
+      color: var(--muted);
+      font-size: 22px;
+      font-weight: 950;
+    }
+
+    .evo-cell {
+      font-size: 28px;
+      line-height: 1.22;
+      font-weight: 900;
+    }
+
+    .evo-cell.detail {
+      align-items: flex-start;
+      min-height: 150px;
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 750;
+      color: var(--muted);
+    }
+
+    .evo-matrix > :nth-child(5n) { border-right: 0; }
+    .evo-matrix > :nth-last-child(-n+5) { border-bottom: 0; }
+
     .ladder {
       margin-top: 82px;
       display: grid;
@@ -837,11 +893,36 @@
       <section class="slide">
         <div class="eyebrow">Yu Jun Lens</div>
         <h2>PM 的核心价值，<br>一直在随时代迁移。</h2>
-        <div class="timeline">
-          <div class="time-node"><div class="year">1931</div><div class="word">品牌<br>经理</div><div class="desc">P&G 把品牌当成独立业务来经营。</div></div>
-          <div class="time-node"><div class="year">软件</div><div class="word">需求<br>交付</div><div class="desc">把客户问题翻译成可研发的功能。</div></div>
-          <div class="time-node"><div class="year">移动</div><div class="word">体验<br>增长</div><div class="desc">围绕用户旅程、数据和网络效应迭代。</div></div>
-          <div class="time-node"><div class="year">AI</div><div class="word">系统<br>Builder</div><div class="desc">设计人、模型、工具、数据和反馈。</div></div>
+        <div class="evo-matrix">
+          <div class="evo-head">维度</div>
+          <div class="evo-head">品牌管理</div>
+          <div class="evo-head">软件时代</div>
+          <div class="evo-head">移动互联网</div>
+          <div class="evo-head">AI 时代</div>
+
+          <div class="evo-label">时间 / 年份</div>
+          <div class="evo-cell">1931</div>
+          <div class="evo-cell">1990s-2000s</div>
+          <div class="evo-cell">2010s</div>
+          <div class="evo-cell">2024+</div>
+
+          <div class="evo-label">行业</div>
+          <div class="evo-cell">快消 / 品牌</div>
+          <div class="evo-cell">软件 / SaaS</div>
+          <div class="evo-cell">App / 平台</div>
+          <div class="evo-cell">Agent / AI 原生</div>
+
+          <div class="evo-label">PM 定位</div>
+          <div class="evo-cell">品牌经营者</div>
+          <div class="evo-cell">需求交付者</div>
+          <div class="evo-cell">体验增长者</div>
+          <div class="evo-cell">系统 Builder</div>
+
+          <div class="evo-label">详细展开</div>
+          <div class="evo-cell detail">观察消费者、协调资源，把品牌当成独立业务经营。</div>
+          <div class="evo-cell detail">把客户问题翻译成需求、规格、排期和可交付功能。</div>
+          <div class="evo-cell detail">围绕用户旅程、数据指标、增长漏斗和网络效应迭代。</div>
+          <div class="evo-cell detail">设计人、模型、工具、数据、Eval、Human Gate 和反馈 Loop。</div>
         </div>
         <div class="footer"><span>借用俞军产品方法论的用户价值 / 交易 / 替换成本视角</span><span class="number"></span></div>
         <aside class="notes">这一页先讲 PM 的历史演变。P&G 的 Neil McElroy 在 1931 年写过著名的 brand men 备忘录，核心是每个品牌都要像独立业务一样被经营；到了软件时代，PM 变成把客户问题翻译成需求、规格和交付的人；移动互联网时代，PM 更强调用户体验、增长、数据和生态；到 AI 时代，PM 不再只设计功能，而要设计人、模型、工具、数据、反馈之间的协作系统。借用俞军方法论的底层视角，PM 始终不是文档岗位，而是判断用户价值、设计交易并推动组织交付的人。</aside>
