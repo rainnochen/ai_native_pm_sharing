@@ -11,7 +11,7 @@ Use this when you are starting a PRD, strategy memo, user research synthesis, co
 
 [在这里描述你的问题，例如：设计一个 AI 餐厅推荐 Agent]
 
-请你不要直接给最终答案。
+请你先补齐关键信息，再生成最终答案。
 
 第一步：先问我最多 10 个你必须知道的问题。
 这些问题要覆盖：
@@ -26,7 +26,7 @@ Use this when you are starting a PRD, strategy memo, user research synthesis, co
 9. 明确不做什么；
 10. 上线风险。
 
-第二步：在我回答之前，只输出问题，不要补写方案。
+第二步：在我回答之前，只输出问题，并等待补充信息。
 
 第三步：等我回答后，请把信息分成：
 - 已知事实；
@@ -34,8 +34,8 @@ Use this when you are starting a PRD, strategy memo, user research synthesis, co
 - 高风险缺口；
 - 需要 PM 决策的事项。
 
-如果信息不足以继续，请停止并告诉我还缺什么。
-任何没有输入或证据支持的内容，都必须标为“假设”，不要写成事实。
+如果信息不足以继续，请列出缺口并等待补充。
+任何缺少输入或证据支持的内容，都必须标为“假设”。
 ```
 
 ## Mini Demo

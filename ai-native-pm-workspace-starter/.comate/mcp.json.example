@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "approved-readonly-docs": {
+      "type": "streamable-http",
+      "url": "https://REPLACE-WITH-APPROVED-INTERNAL-ENDPOINT",
+      "notes": "示例。不得写入真实 Token；仅在完成内部审批后使用。"
+    }
+  }
+}

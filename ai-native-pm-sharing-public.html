@@ -1,0 +1,1722 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Native PM Kit - Public Sharing</title>
+  <style>
+    :root {
+      --ink: #171615;
+      --muted: #69645e;
+      --paper: #f7f1e7;
+      --paper-2: #fffaf1;
+      --line: rgba(23, 22, 21, .16);
+      --red: #e34d32;
+      --blue: #1f6feb;
+      --green: #15803d;
+      --gold: #b7791f;
+      --charcoal: #25211d;
+      --font-sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #161412;
+      color: var(--ink);
+      font-family: var(--font-sans);
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    #deck {
+      width: 100vw;
+      height: 100vh;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stage {
+      position: absolute;
+      width: 1920px;
+      height: 1080px;
+      left: 50%;
+      top: 50%;
+      transform-origin: center center;
+      background: var(--paper);
+      overflow: hidden;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, .45);
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      padding: 76px 92px;
+      background:
+        linear-gradient(90deg, rgba(23, 22, 21, .05) 1px, transparent 1px),
+        linear-gradient(180deg, rgba(23, 22, 21, .04) 1px, transparent 1px),
+        var(--paper);
+      background-size: 64px 64px;
+    }
+
+    .slide.active {
+      display: block;
+      animation: enter .45s ease both;
+    }
+
+    @keyframes enter {
+      from { opacity: 0; transform: translateY(18px) scale(.995); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .slide.dark {
+      background:
+        radial-gradient(circle at 82% 18%, rgba(227, 77, 50, .28), transparent 24%),
+        radial-gradient(circle at 14% 86%, rgba(31, 111, 235, .20), transparent 24%),
+        linear-gradient(135deg, #151310 0%, #211d19 58%, #121110 100%);
+      color: var(--paper-2);
+    }
+
+    .slide.dark .eyebrow,
+    .slide.dark .kicker,
+    .slide.dark .footer,
+    .slide.dark .muted { color: rgba(255, 250, 241, .66); }
+
+    .slide.dark .rule,
+    .slide.dark .thin { background: rgba(255, 250, 241, .16); }
+
+    .slide.dark .tag,
+    .slide.dark .mini-card,
+    .slide.dark .quote {
+      border-color: rgba(255, 250, 241, .18);
+      background: rgba(255, 250, 241, .06);
+      color: var(--paper-2);
+    }
+
+    .eyebrow {
+      font-size: 22px;
+      line-height: 1;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 44px;
+      height: 6px;
+      background: var(--red);
+      display: inline-block;
+    }
+
+    h1, h2, h3, p { margin: 0; }
+
+    h1 {
+      margin-top: 72px;
+      font-size: 112px;
+      line-height: .98;
+      letter-spacing: 0;
+      max-width: 1320px;
+      font-weight: 900;
+    }
+
+    h2 {
+      margin-top: 88px;
+      font-size: 86px;
+      line-height: 1.03;
+      letter-spacing: 0;
+      max-width: 1420px;
+      font-weight: 900;
+    }
+
+    h3 {
+      font-size: 34px;
+      line-height: 1.2;
+      font-weight: 850;
+    }
+
+    .super {
+      font-size: 142px;
+      line-height: .95;
+      letter-spacing: 0;
+      font-weight: 950;
+    }
+
+    .subtitle {
+      margin-top: 42px;
+      font-size: 34px;
+      line-height: 1.45;
+      color: var(--muted);
+      max-width: 1220px;
+      font-weight: 650;
+    }
+
+    .dark .subtitle { color: rgba(255, 250, 241, .72); }
+
+    .visual-bg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: 0;
+      opacity: .9;
+    }
+
+    .visual-shade {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(90deg, rgba(18, 17, 16, .92) 0%, rgba(18, 17, 16, .72) 38%, rgba(18, 17, 16, .18) 100%),
+        linear-gradient(180deg, rgba(18, 17, 16, .25), rgba(18, 17, 16, .5));
+    }
+
+    .slide.visual .eyebrow,
+    .slide.visual .footer,
+    .slide.visual .subtitle { color: rgba(255, 250, 241, .78); }
+
+    .slide.visual h1,
+    .slide.visual h2,
+    .slide.visual .statement { color: var(--paper-2); }
+
+    .visual-split {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 70px;
+      align-items: center;
+      margin-top: 74px;
+    }
+
+    .visual-card {
+      border: 2px solid rgba(255, 250, 241, .18);
+      background: rgba(23, 22, 21, .48);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 32px 90px rgba(0,0,0,.28);
+    }
+
+    .visual-card img {
+      display: block;
+      width: 100%;
+      height: 470px;
+      object-fit: cover;
+    }
+
+    .visual-caption {
+      padding: 24px 28px;
+      color: rgba(255, 250, 241, .78);
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 750;
+    }
+
+    .infoflow-showcase {
+      display: grid;
+      grid-template-columns: .72fr 1.28fr;
+      gap: 42px;
+      align-items: stretch;
+      margin-top: 38px;
+    }
+
+    .infoflow-points {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-content: start;
+    }
+
+    .infoflow-point {
+      min-height: 182px;
+      border: 2px solid var(--line);
+      background: rgba(255, 250, 241, .58);
+      border-radius: 8px;
+      padding: 24px;
+    }
+
+    .infoflow-point .label {
+      font-size: 18px;
+      line-height: 1;
+      color: var(--muted);
+      font-weight: 950;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+    }
+
+    .infoflow-point .value {
+      font-size: 30px;
+      line-height: 1.18;
+      font-weight: 930;
+    }
+
+    .infoflow-screens {
+      display: grid;
+      gap: 18px;
+    }
+
+    .infoflow-shot {
+      margin: 0;
+      border: 2px solid rgba(23, 22, 21, .16);
+      border-radius: 10px;
+      background: rgba(255, 250, 241, .66);
+      box-shadow: 0 24px 64px rgba(23, 22, 21, .14);
+      overflow: hidden;
+    }
+
+    .infoflow-shot img {
+      display: block;
+      width: 100%;
+      height: 238px;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .infoflow-shot.terminal img {
+      height: 280px;
+      object-fit: contain;
+      background: #111;
+    }
+
+    .infoflow-shot figcaption {
+      padding: 14px 20px 16px;
+      font-size: 18px;
+      line-height: 1.25;
+      color: var(--muted);
+      font-weight: 850;
+    }
+
+    .loop-sketch-layout {
+      display: grid;
+      grid-template-columns: .72fr 1fr;
+      gap: 64px;
+      align-items: center;
+      margin-top: 48px;
+    }
+
+    .loop-definition {
+      display: grid;
+      gap: 22px;
+    }
+
+    .loop-definition .line {
+      border: 2px solid var(--line);
+      background: rgba(255, 250, 241, .45);
+      border-radius: 8px;
+      padding: 24px 28px;
+      font-size: 34px;
+      line-height: 1.22;
+      font-weight: 900;
+    }
+
+    .loop-definition .line span {
+      display: block;
+      color: var(--muted);
+      font-size: 20px;
+      line-height: 1.35;
+      margin-top: 8px;
+      font-weight: 800;
+    }
+
+    .loop-sketch-card {
+      border: 2px solid rgba(23, 22, 21, .2);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 28px 70px rgba(23, 22, 21, .16);
+      padding: 20px;
+    }
+
+    .loop-sketch-card img {
+      display: block;
+      width: 100%;
+      height: 570px;
+      object-fit: contain;
+    }
+
+    .statement {
+      margin-top: 118px;
+      font-size: 90px;
+      line-height: 1.08;
+      font-weight: 930;
+      max-width: 1500px;
+    }
+
+    .statement.small { font-size: 70px; max-width: 1500px; }
+    .statement.tight { max-width: 1160px; }
+
+    /* Information-density scale:
+       cover > low-density statement page > medium card/claim page > high-density table/flow page.
+       Pages with similar information density should stay on the same type scale. */
+    .slide.density-low h2,
+    .slide.density-low .statement:not(.joke-line) {
+      font-size: 86px;
+      line-height: 1.06;
+      max-width: 1480px;
+    }
+
+    .slide.density-medium h2,
+    .slide.density-medium .statement:not(.joke-line) {
+      font-size: 76px;
+      line-height: 1.08;
+      max-width: 1480px;
+    }
+
+    .slide.density-high h2,
+    .slide.density-high .statement:not(.joke-line) {
+      font-size: 66px;
+      line-height: 1.1;
+      max-width: 1500px;
+    }
+
+    .slide.density-table h2,
+    .slide.density-table .statement:not(.joke-line) {
+      font-size: 68px;
+      line-height: 1.08;
+      max-width: 1500px;
+    }
+
+    .slide.density-medium .mini-card .big { font-size: 40px; line-height: 1.16; }
+    .slide.density-high .mini-card .big { font-size: 34px; line-height: 1.2; }
+    .slide.density-high .diagram-row .right { font-size: 25px; line-height: 1.34; }
+    .slide.density-high .diagram-row .left { font-size: 26px; }
+    .slide.density-table .evo-cell { font-size: 26px; line-height: 1.22; }
+    .slide.density-table .evo-cell.detail { font-size: 21px; line-height: 1.34; }
+    .slide.density-table .qr-card .hint { font-size: 19px; }
+
+    .statement.joke-line {
+      position: absolute;
+      left: 50%;
+      top: 44%;
+      transform: translate(-50%, -50%);
+      margin-top: 0;
+      max-width: none;
+      width: 1680px;
+      text-align: center;
+      white-space: nowrap;
+      font-size: 104px;
+      line-height: 1;
+    }
+
+    .statement.survival-line {
+      margin-top: 176px;
+      max-width: none;
+      width: 1680px;
+      text-align: center;
+      white-space: nowrap;
+      font-size: 96px;
+      line-height: 1;
+    }
+
+    .survival-note {
+      margin: 46px auto 0;
+      max-width: 1420px;
+      text-align: center;
+      font-size: 42px;
+      line-height: 1.34;
+      color: rgba(255, 250, 241, .76);
+      font-weight: 760;
+    }
+
+    .accent { color: var(--red); }
+    .blue { color: var(--blue); }
+    .green { color: var(--green); }
+    .gold { color: var(--gold); }
+
+    .rule {
+      height: 2px;
+      background: var(--line);
+      width: 100%;
+      margin: 48px 0;
+    }
+
+    .thin {
+      height: 1px;
+      background: var(--line);
+      width: 100%;
+    }
+
+    .footer {
+      position: absolute;
+      left: 92px;
+      right: 92px;
+      bottom: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .progress {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      height: 8px;
+      background: var(--red);
+      width: 0;
+      transition: width .25s ease;
+      z-index: 20;
+    }
+
+    .number {
+      font-variant-numeric: tabular-nums;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 52px;
+      margin-top: 78px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 32px;
+      margin-top: 70px;
+    }
+
+    .grid-4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 58px;
+    }
+
+    .grid-4 .mini-card {
+      min-height: 350px;
+      padding: 30px;
+    }
+
+    .grid-4 .mini-card .big {
+      font-size: 34px;
+      line-height: 1.2;
+    }
+
+    .mini-card {
+      min-height: 260px;
+      border: 2px solid var(--line);
+      background: rgba(255, 250, 241, .56);
+      border-radius: 8px;
+      padding: 36px;
+      position: relative;
+    }
+
+    .mini-card .label {
+      font-size: 20px;
+      color: var(--muted);
+      font-weight: 900;
+      text-transform: uppercase;
+      margin-bottom: 32px;
+    }
+
+    .mini-card .big {
+      font-size: 44px;
+      line-height: 1.14;
+      font-weight: 900;
+    }
+
+    .mini-card .body {
+      margin-top: 22px;
+      font-size: 25px;
+      line-height: 1.38;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .tags {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 42px;
+    }
+
+    .tag {
+      border: 2px solid var(--line);
+      background: rgba(255, 250, 241, .62);
+      border-radius: 999px;
+      padding: 12px 20px;
+      font-size: 23px;
+      line-height: 1;
+      font-weight: 850;
+    }
+
+    .cover-signin {
+      position: absolute;
+      right: 104px;
+      bottom: 118px;
+      width: 208px;
+      padding: 14px;
+      border: 2px solid rgba(255, 250, 241, .16);
+      border-radius: 12px;
+      background: rgba(255, 250, 241, .08);
+      box-shadow: 0 22px 58px rgba(0, 0, 0, .26);
+      backdrop-filter: blur(8px);
+    }
+
+    .cover-signin img {
+      display: block;
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: contain;
+      border-radius: 8px;
+      background: #fff;
+      padding: 8px;
+    }
+
+    .cover-signin .label {
+      margin-top: 12px;
+      color: rgba(255, 250, 241, .88);
+      font-size: 22px;
+      line-height: 1.2;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .cover-signin .hint {
+      margin-top: 6px;
+      color: rgba(255, 250, 241, .56);
+      font-size: 15px;
+      line-height: 1.25;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .cover-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 18px;
+      margin-top: 28px;
+      padding: 14px 20px;
+      border: 2px solid rgba(255, 250, 241, .14);
+      border-radius: 999px;
+      background: rgba(255, 250, 241, .06);
+      color: rgba(255, 250, 241, .76);
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 850;
+    }
+
+    .cover-meta .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 106px;
+      padding: 9px 14px;
+      border-radius: 999px;
+      background: var(--red);
+      color: var(--paper-2);
+      font-size: 19px;
+      font-weight: 950;
+    }
+
+    .cover-footer {
+      align-items: flex-end;
+      color: rgba(255, 250, 241, .74);
+    }
+
+    .cover-speaker {
+      display: grid;
+      gap: 8px;
+    }
+
+    .cover-speaker strong {
+      color: var(--paper-2);
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 950;
+    }
+
+    .cover-speaker em {
+      color: rgba(255, 250, 241, .68);
+      font-size: 22px;
+      line-height: 1;
+      font-style: normal;
+      font-weight: 850;
+    }
+
+    .quote {
+      border-left: 12px solid var(--red);
+      padding: 30px 38px;
+      background: rgba(255, 250, 241, .68);
+      font-size: 48px;
+      line-height: 1.18;
+      font-weight: 900;
+      max-width: 1280px;
+      margin-top: 72px;
+    }
+
+    .timeline {
+      margin-top: 92px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border-top: 4px solid var(--ink);
+    }
+
+    .time-node {
+      padding: 36px 28px 0 0;
+      border-right: 2px solid var(--line);
+      min-height: 300px;
+      position: relative;
+    }
+
+    .time-node::before {
+      content: "";
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--red);
+      position: absolute;
+      top: -15px;
+      left: 0;
+    }
+
+    .time-node .year {
+      font-size: 42px;
+      font-weight: 950;
+    }
+
+    .time-node .word {
+      margin-top: 34px;
+      font-size: 42px;
+      line-height: 1.08;
+      font-weight: 900;
+    }
+
+    .time-node .desc {
+      margin-top: 22px;
+      font-size: 24px;
+      line-height: 1.38;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .evo-matrix {
+      margin-top: 58px;
+      display: grid;
+      grid-template-columns: 170px repeat(4, 1fr);
+      border: 3px solid var(--ink);
+      background: rgba(255, 250, 241, .66);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 1660px;
+    }
+
+    .evo-head,
+    .evo-label,
+    .evo-cell {
+      border-right: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      min-height: 110px;
+      padding: 24px 24px;
+      display: flex;
+      align-items: center;
+    }
+
+    .evo-head {
+      min-height: 78px;
+      background: var(--ink);
+      color: var(--paper-2);
+      font-size: 27px;
+      line-height: 1.1;
+      font-weight: 950;
+    }
+
+    .evo-label {
+      background: rgba(227, 77, 50, .08);
+      color: var(--muted);
+      font-size: 22px;
+      font-weight: 950;
+    }
+
+    .evo-cell {
+      font-size: 28px;
+      line-height: 1.22;
+      font-weight: 900;
+    }
+
+    .evo-cell.detail {
+      align-items: flex-start;
+      min-height: 150px;
+      font-size: 22px;
+      line-height: 1.35;
+      font-weight: 750;
+      color: var(--muted);
+    }
+
+    .evo-matrix > :nth-child(5n) { border-right: 0; }
+    .evo-matrix > :nth-last-child(-n+5) { border-bottom: 0; }
+
+    .ladder {
+      margin-top: 82px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 18px;
+      align-items: end;
+      height: 470px;
+    }
+
+    .step {
+      border: 2px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper-2);
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .step:nth-child(1) { height: 190px; }
+    .step:nth-child(2) { height: 250px; }
+    .step:nth-child(3) { height: 310px; }
+    .step:nth-child(4) { height: 370px; }
+    .step:nth-child(5) { height: 440px; background: var(--charcoal); color: var(--paper-2); }
+
+    .step .idx {
+      font-size: 22px;
+      color: var(--red);
+      font-weight: 950;
+    }
+
+    .step .name {
+      font-size: 34px;
+      line-height: 1.08;
+      font-weight: 930;
+    }
+
+    .step .caption {
+      font-size: 22px;
+      line-height: 1.32;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .step:nth-child(5) .caption { color: rgba(255, 250, 241, .72); }
+
+    .loop {
+      position: absolute;
+      width: 620px;
+      height: 620px;
+      right: 160px;
+      top: 245px;
+      border: 18px solid var(--ink);
+      border-radius: 50%;
+    }
+
+    .loop::after {
+      content: "";
+      position: absolute;
+      width: 0;
+      height: 0;
+      right: 48px;
+      top: 18px;
+      border-top: 46px solid transparent;
+      border-bottom: 46px solid transparent;
+      border-left: 72px solid var(--ink);
+      transform: rotate(42deg);
+    }
+
+    .loop .center {
+      position: absolute;
+      inset: 145px;
+      border-radius: 50%;
+      background: var(--red);
+      color: #fffaf1;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      font-size: 40px;
+      line-height: 1.15;
+      font-weight: 950;
+    }
+
+    .loop-word {
+      position: absolute;
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--muted);
+    }
+
+    .w1 { left: 285px; top: 120px; }
+    .w2 { right: -15px; top: 250px; }
+    .w3 { right: 95px; bottom: 60px; }
+    .w4 { left: 90px; bottom: 70px; }
+    .w5 { left: -40px; top: 260px; }
+
+    .diagram {
+      margin-top: 86px;
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 1280px;
+      background: var(--paper-2);
+    }
+
+    .diagram-row {
+      display: grid;
+      grid-template-columns: 310px 1fr;
+      border-bottom: 2px solid var(--line);
+      min-height: 86px;
+    }
+
+    .diagram-row:last-child { border-bottom: 0; }
+
+    .diagram-row .left {
+      padding: 24px 28px;
+      background: rgba(227, 77, 50, .08);
+      font-size: 28px;
+      font-weight: 950;
+      border-right: 2px solid var(--line);
+    }
+
+    .diagram-row .right {
+      padding: 24px 30px;
+      font-size: 27px;
+      line-height: 1.3;
+      font-weight: 700;
+      color: var(--muted);
+    }
+
+    .harness-visual-layout {
+      display: grid;
+      grid-template-columns: .82fr 1fr;
+      gap: 38px;
+      align-items: stretch;
+      margin-top: 48px;
+    }
+
+    .harness-visual-layout .diagram {
+      margin-top: 0;
+      max-width: none;
+    }
+
+    .harness-visual-layout .diagram-row {
+      grid-template-columns: 190px 1fr;
+      min-height: 92px;
+    }
+
+    .harness-visual-layout .diagram-row .left {
+      font-size: 24px;
+      padding: 24px 24px;
+    }
+
+    .harness-visual-layout .diagram-row .right {
+      font-size: 24px;
+      line-height: 1.28;
+      padding: 24px 26px;
+    }
+
+    .harness-visual-card {
+      border: 3px solid rgba(23, 22, 21, .18);
+      border-radius: 10px;
+      background: rgba(255, 250, 241, .74);
+      box-shadow: 0 24px 72px rgba(23, 22, 21, .16);
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+
+    .harness-visual-card img {
+      display: block;
+      width: 100%;
+      height: 470px;
+      object-fit: contain;
+      background: #091a38;
+    }
+
+    .harness-visual-card .caption {
+      padding: 18px 22px;
+      font-size: 20px;
+      line-height: 1.28;
+      color: var(--muted);
+      font-weight: 850;
+      border-top: 2px solid var(--line);
+    }
+
+    .slide.dark .diagram {
+      border-color: rgba(255, 250, 241, .18);
+      background: var(--paper-2);
+      box-shadow: 0 24px 70px rgba(0, 0, 0, .28);
+    }
+
+    .slide.dark .diagram-row {
+      border-bottom-color: var(--line);
+    }
+
+    .slide.dark .diagram-row .left {
+      color: var(--ink);
+      background: rgba(227, 77, 50, .10);
+      border-right-color: var(--line);
+    }
+
+    .slide.dark .diagram-row .right {
+      color: var(--muted);
+    }
+
+    .big-list {
+      margin-top: 84px;
+      display: grid;
+      gap: 28px;
+      max-width: 1240px;
+    }
+
+    .big-list .item {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      gap: 24px;
+      align-items: start;
+      font-size: 44px;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    .bullet {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      background: var(--red);
+      color: var(--paper-2);
+      display: grid;
+      place-items: center;
+      font-size: 25px;
+      font-weight: 950;
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap: 72px;
+      height: 780px;
+      align-items: center;
+    }
+
+    .huge-num {
+      font-size: 210px;
+      line-height: .85;
+      font-weight: 950;
+      color: var(--red);
+    }
+
+    .caption-large {
+      margin-top: 32px;
+      font-size: 42px;
+      line-height: 1.22;
+      font-weight: 850;
+      max-width: 780px;
+    }
+
+    .source {
+      margin-top: 28px;
+      font-size: 20px;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .artifact {
+      width: 640px;
+      min-height: 520px;
+      border: 3px solid var(--ink);
+      background: var(--paper-2);
+      border-radius: 8px;
+      padding: 38px;
+      box-shadow: 18px 18px 0 rgba(23, 22, 21, .12);
+    }
+
+    .artifact .topline {
+      height: 18px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 44px;
+    }
+
+    .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+
+    .dot:nth-child(2) { background: var(--gold); }
+    .dot:nth-child(3) { background: var(--green); }
+
+    .artifact-line {
+      height: 24px;
+      background: rgba(23, 22, 21, .16);
+      margin: 22px 0;
+      border-radius: 4px;
+    }
+
+    .artifact-line.short { width: 58%; }
+    .artifact-line.mid { width: 78%; }
+    .artifact-line.red { background: rgba(227, 77, 50, .36); }
+
+    .prompt-pair {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 34px;
+      margin-top: 70px;
+    }
+
+    .prompt-box {
+      border: 3px solid var(--ink);
+      border-radius: 8px;
+      background: var(--paper-2);
+      padding: 34px;
+      min-height: 410px;
+      font-size: 30px;
+      line-height: 1.34;
+      font-weight: 760;
+      white-space: pre-wrap;
+    }
+
+    .prompt-box.bad {
+      border-color: rgba(227, 77, 50, .75);
+      background: rgba(227, 77, 50, .08);
+    }
+
+    .prompt-box.good {
+      border-color: rgba(21, 128, 61, .75);
+      background: rgba(21, 128, 61, .08);
+    }
+
+    .prompt-box .prompt-title {
+      display: block;
+      margin-bottom: 24px;
+      font-size: 22px;
+      color: var(--muted);
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .path-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: .15;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slide > *:not(.path-canvas):not(.visual-bg):not(.visual-shade):not(.footer):not(.progress):not(.cover-signin) {
+      position: relative;
+      z-index: 1;
+    }
+
+    .notes {
+      display: none;
+      position: absolute;
+      right: 34px;
+      bottom: 86px;
+      width: 620px;
+      max-height: 360px;
+      overflow: auto;
+      background: rgba(23, 22, 21, .92);
+      color: var(--paper-2);
+      border-radius: 8px;
+      padding: 24px;
+      font-size: 22px;
+      line-height: 1.42;
+      z-index: 50;
+      box-shadow: 0 22px 80px rgba(0,0,0,.38);
+    }
+
+    body.show-notes .slide.active .notes { display: block; }
+
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, .48);
+      color: rgba(255, 255, 255, .86);
+      font-size: 13px;
+      font-weight: 750;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+    }
+
+    .controls button {
+      border: 0;
+      background: rgba(255,255,255,.14);
+      color: #fff;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    @media print {
+      html, body { overflow: visible; background: white; height: auto; }
+      #deck { height: auto; overflow: visible; }
+      .stage { position: static; transform: none !important; width: 1920px; height: auto; box-shadow: none; }
+      .slide { position: relative; display: block; page-break-after: always; width: 1920px; height: 1080px; }
+      .controls, .notes { display: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main id="deck">
+    <div class="stage" id="stage">
+      <section class="slide dark active density-cover" data-title="cover">
+        <canvas class="path-canvas"></canvas>
+        <div class="eyebrow">AI Native PM Kit · Public Edition</div>
+        <h1 class="super">AI 原生组织下的<br>PM 自进化实践</h1>
+        <p class="subtitle">Prompt → Harness → Loop → Builder</p>
+        <div class="tags">
+          <span class="tag">工作系统课</span>
+          <span class="tag">聚焦工作系统</span>
+          <span class="tag">也是一次能力预演</span>
+        </div>
+        <div class="cover-meta">
+          <span class="badge">Public toolkit</span>
+          <span>Prompt -> Harness -> Loop -> Builder</span>
+          <span>rainnochen/ai_native_pm_sharing</span>
+        </div>
+        <div class="footer cover-footer"><span class="cover-speaker"><strong>AI Native PM Kit</strong><em>Open toolkit for product managers</em></span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-low">
+        <div class="eyebrow">A Dangerous Joke</div>
+        <p class="statement joke-line">“只要学得够慢，<span class="accent">就不用学了。</span>”</p>
+        <div class="footer"><span>Opening · 这个玩笑正在变得危险</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-medium">
+        <div class="eyebrow">Non-Consensus</div>
+        <p class="statement tight">今天正确的 AI 共识，<br>可能 <span class="accent">90 天后</span> 就过期。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">昨天</div><div class="big">Prompt<br>Engineering</div></div>
+          <div class="mini-card"><div class="label">今天</div><div class="big">Harness<br>Engineering</div></div>
+          <div class="mini-card"><div class="label">明天</div><div class="big">Loop Engineering<br>结论还会再变</div></div>
+        </div>
+        <div class="footer"><span>组织能力 = 快速试错 + 快速更新共识</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-medium">
+        <div class="eyebrow">Course Map</div>
+        <h2>今天分三段。</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">Part 1</div><div class="big">AI 原生组织下<br>PM 要怎么做</div></div>
+          <div class="mini-card"><div class="label">Part 2</div><div class="big">用本地文件夹<br>搭自己的工作台</div></div>
+          <div class="mini-card"><div class="label">Part 3</div><div class="big">成为 Builder，<br>开始 side project</div></div>
+        </div>
+        <div class="footer"><span>先建立认知，再手把手搭工作流，最后进入 Builder 训练场</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark visual density-medium">
+        <img class="visual-bg" src="assets/visuals/ai-native-organization.png" alt="">
+        <div class="visual-shade"></div>
+        <div class="eyebrow">AI Native Organization</div>
+        <p class="statement small">AI 原生组织，<br>把 AI 作为默认生产力系统。</p>
+        <p class="subtitle">也会把大模型作为默认生产力、默认协作对象、默认执行系统。</p>
+        <div class="footer"><span>组织变化先于工具清单</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-table">
+        <div class="eyebrow">Yu Jun Lens</div>
+        <h2>PM 的核心价值，<br>一直在随时代迁移。</h2>
+        <div class="evo-matrix">
+          <div class="evo-head">维度</div>
+          <div class="evo-head">品牌管理</div>
+          <div class="evo-head">软件时代</div>
+          <div class="evo-head">移动互联网</div>
+          <div class="evo-head">AI 时代</div>
+
+          <div class="evo-label">时间 / 年份</div>
+          <div class="evo-cell">1931</div>
+          <div class="evo-cell">1990s-2000s</div>
+          <div class="evo-cell">2010s</div>
+          <div class="evo-cell">2024+</div>
+
+          <div class="evo-label">行业</div>
+          <div class="evo-cell">快消 / 品牌</div>
+          <div class="evo-cell">软件 / SaaS</div>
+          <div class="evo-cell">App / 平台</div>
+          <div class="evo-cell">Agent / AI 原生</div>
+
+          <div class="evo-label">PM 定位</div>
+          <div class="evo-cell">品牌经营者</div>
+          <div class="evo-cell">需求交付者</div>
+          <div class="evo-cell">体验增长者</div>
+          <div class="evo-cell">系统 Builder</div>
+
+          <div class="evo-label">详细展开</div>
+          <div class="evo-cell detail">观察消费者、协调资源，把品牌当成独立业务经营。</div>
+          <div class="evo-cell detail">把客户问题翻译成需求、规格、排期和可交付功能。</div>
+          <div class="evo-cell detail">围绕用户旅程、数据指标、增长漏斗和网络效应迭代。</div>
+          <div class="evo-cell detail">设计人、模型、工具、数据、Eval、Human Gate 和反馈 Loop。</div>
+        </div>
+        <div class="footer"><span>借用俞军产品方法论的用户价值 / 交易 / 替换成本视角</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark visual density-medium">
+        <img class="visual-bg" src="assets/visuals/pm-evolution.png" alt="">
+        <div class="visual-shade"></div>
+        <div class="eyebrow">AI 时代的变与不变</div>
+        <p class="statement small">PM 的核心价值没有发生变化：<br><span class="accent">做高质量的价值判断。</span></p>
+        <div class="tags">
+          <div class="tag">不变：用户价值</div>
+          <div class="tag">不变：交易判断</div>
+          <div class="tag">变化：人机协作系统</div>
+          <div class="tag">要求：Builder / Loop Owner</div>
+        </div>
+        <div class="footer"><span>变化的是工作对象和交付方式，不变的是价值判断责任</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Software Development Shift</div>
+        <h2>为什么敏捷开发不够用了</h2>
+        <div class="diagram">
+          <div class="diagram-row"><div class="left">过去敏捷成立</div><div class="right">研发资源稀缺，需求要进需求池排期，用迭代周期逐步交付</div></div>
+          <div class="diagram-row"><div class="left">敏捷的好处</div><div class="right">控制研发投入，缩短反馈周期，降低一次性押错风险</div></div>
+          <div class="diagram-row"><div class="left">AI 时代卡点</div><div class="right">不再只是写代码效率，而是需求是否清晰、边界是否明确</div></div>
+          <div class="diagram-row"><div class="left">PM 新重点</div><div class="right">用更少功能验证更高用户价值，并把反馈带回下一轮</div></div>
+        </div>
+        <div class="footer"><span>代码变便宜以后，贵的是问题定义、范围取舍和价值验证</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-low">
+        <div class="eyebrow">LLM Basics</div>
+        <p class="statement small">大模型的核心能力，<br>是基于上下文 <span class="accent">补全</span>。</p>
+        <p class="subtitle">给定上下文，它预测下一个最可能的 token，并持续生成下去。</p>
+        <div class="footer"><span>所以它会猜，也会把假设写得像事实</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Interaction Demo</div>
+        <h2>先让模型提出问题。<br>再让它回答。</h2>
+        <div class="prompt-pair">
+          <div class="prompt-box bad"><span class="prompt-title">容易出问题</span>帮我写一份 AI 餐厅推荐 Agent 的 PRD。</div>
+          <div class="prompt-box good"><span class="prompt-title">更好的方式</span>通过让模型多轮提问，请先问我 3 轮，每轮问 5 个必须知道的问题，并把已知事实 / 待确认假设 / 高风险缺口分开列出来，再写 PRD。</div>
+        </div>
+        <div class="footer"><span>让模型先暴露不确定性</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-medium">
+        <div class="eyebrow">PM Workbench</div>
+        <p class="statement small">Prompt 负责一次对话。<br>Harness 承载你的 <span class="accent">PM 工作台</span>。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">Context</div><div class="big">项目文档<br>代码上下文<br>数据摘要</div></div>
+          <div class="mini-card"><div class="label">Skills</div><div class="big">调研<br>PRD<br>数据分析</div></div>
+          <div class="mini-card"><div class="label">Tools</div><div class="big">Comate<br>Knowledge Tools<br>Data Tools</div></div>
+        </div>
+        <div class="footer"><span>工具连接遵循数据分级和 Human Gate</span><span class="number"></span></div>
+      </section>
+
+      
+
+      
+
+      <section class="slide density-medium">
+        <div class="eyebrow">Core Claim</div>
+        <p class="statement small">AI 对 PM 的影响，<br>不只是<span class="accent">提效</span>；<br>更重要的是<span class="accent">重构工作方式</span>。</p>
+        <p class="subtitle">提效是第一层，工作流、协作系统和组织能力才是后面的收益。</p>
+        <div class="footer"><span>从文档链，到证据链</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">2023 → 2026</div>
+        <h2>从聊天框，到工作系统</h2>
+        <p class="subtitle">从简单独立的任务，到复杂连续的任务。</p>
+        <div class="timeline">
+          <div class="time-node"><div class="year">2023</div><div class="word">对话<br>生成</div><div class="desc">AI 帮我写东西</div></div>
+          <div class="time-node"><div class="year">2024</div><div class="word">工具<br>多模态</div><div class="desc">AI 读资料、看图、连系统</div></div>
+          <div class="time-node"><div class="year">2025</div><div class="word">Agent<br>Builder</div><div class="desc">AI 完成任务，PM 做 Demo</div></div>
+          <div class="time-node"><div class="year">2026</div><div class="word">Harness<br>Loop</div><div class="desc">AI 进入持续运行的工作系统</div></div>
+        </div>
+        <div class="footer"><span>工具品牌会变，工作范式更重要</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-high">
+        <div class="eyebrow">Four Layers</div>
+        <h2>99% 的人停在 AI 对话。<br>更大的价值在上面三层。</h2>
+        <div class="diagram">
+          <div class="diagram-row"><div class="left">组织协作</div><div class="right">围绕 AI 能力，重构整个组织的协作和生产流程</div></div>
+          <div class="diagram-row"><div class="left">Loop</div><div class="right">让反馈进入下一轮，持续改进，持续放大产出</div></div>
+          <div class="diagram-row"><div class="left">Harness</div><div class="right">把上下文、Skills、工具和评测组织起来，规模化产出</div></div>
+          <div class="diagram-row"><div class="left">Prompt / Model</div><div class="right">简单 AI 对话：提问、生成、总结、改写</div></div>
+        </div>
+        <div class="footer"><span>从一次对话，到 Harness / Loop scaling，再到组织协作重构</span><span class="number"></span></div>
+      </section>
+
+
+
+      <section class="slide dark visual density-medium">
+        <img class="visual-bg" src="assets/visuals/prompt-harness-loop.png" alt="">
+        <div class="visual-shade"></div>
+        <div class="eyebrow">Main Framework</div>
+        <h2>PM 的 AI 进化三部曲</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">01</div><div class="big">Prompt</div><div class="body">把一次问题问清楚。</div></div>
+          <div class="mini-card"><div class="label">02</div><div class="big">Harness</div><div class="body">把能力接入工作系统。</div></div>
+          <div class="mini-card"><div class="label">03</div><div class="big">Loop</div><div class="body">让反馈持续进化。</div></div>
+        </div>
+        <div class="footer"><span>三者是不同尺度</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-low">
+        <div class="eyebrow">Prompt Engineering</div>
+        <p class="statement">好 Prompt 的本质，<br>是 <span class="accent">好任务定义</span>。</p>
+        <div class="tags">
+          <span class="tag">Decision</span>
+          <span class="tag">Context</span>
+          <span class="tag">Constraint</span>
+          <span class="tag">Task</span>
+          <span class="tag">Eval</span>
+        </div>
+        <div class="footer"><span>第一阶段，但需要继续升级</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Limit</div>
+        <p class="statement small">状态、工具、权限、验收和反馈，会把 Prompt 从一次输出升级为工作系统。</p>
+        <div class="big-list">
+          <div class="item"><span class="bullet">1</span><span>一次上下文</span></div>
+          <div class="item"><span class="bullet">2</span><span>难复用，难沉淀</span></div>
+          <div class="item"><span class="bullet">3</span><span>需要接入现实闭环</span></div>
+        </div>
+        <div class="footer"><span>Prompt 收藏夹需要升级成工作系统</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Harness Engineering</div>
+        <p class="statement small">Harness 是 AI 的 <span class="accent">工作环境</span>，<br>承载 Prompt、上下文、工具和评估。</p>
+        <div class="diagram">
+          <div class="diagram-row"><div class="left">Knowledge</div><div class="right">业务事实、术语、指标、历史决策</div></div>
+          <div class="diagram-row"><div class="left">Skills</div><div class="right">可复用的调研、分析、PRD Critic、实验设计能力</div></div>
+          <div class="diagram-row"><div class="left">Tools</div><div class="right">搜索、文档、数据、原型、GitHub、业务 API</div></div>
+          <div class="diagram-row"><div class="left">Feedback</div><div class="right">Rubric、用户反馈、业务指标、失败样本</div></div>
+        </div>
+        <div class="footer"><span>给 AI 一套工作条件</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-medium">
+        <div class="eyebrow">From Harness to Loop</div>
+        <p class="statement small">Harness 让 AI <span class="accent">稳定工作</span>。<br>Loop 让系统<span class="accent">持续变好</span>。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">一次任务</div><div class="big">能跑通</div><div class="body">上下文、工具、规则都在场。</div></div>
+          <div class="mini-card"><div class="label">真实反馈</div><div class="big">会回来</div><div class="body">用户、数据、失败样本会改变判断。</div></div>
+          <div class="mini-card"><div class="label">下一轮</div><div class="big">要变好</div><div class="body">把有效经验写回系统。</div></div>
+        </div>
+        <div class="footer"><span>从“能完成任务”，到“越跑越准”</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Minimum Loop</div>
+        <h2>最小 Loop，只有 5 个环节。</h2>
+        <div class="loop-sketch-layout">
+          <div class="loop-definition">
+            <div class="line">Loop = 循环<span>任务不是一次完成，而是进入下一轮。</span></div>
+            <div class="line">Engineering = 工程化<span>把自由发挥变成可执行、可检查、可修正的流程。</span></div>
+            <div class="line">给 AI 一条轨道<span>目标、计划、执行、检查、迭代。</span></div>
+          </div>
+          <div class="loop-sketch-card">
+            <img src="assets/visuals/minimal-loop-5-steps.png" alt="最小 Loop 五个环节：目标、计划、执行、检查、迭代">
+          </div>
+        </div>
+        <div class="footer"><span>目标 → 计划 → 执行 → 检查 → 迭代</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-low">
+        <div class="eyebrow">Loop Engineering</div>
+        <p class="statement">一次生成提供起点。<br><span class="accent">下一轮怎样变好</span>决定系统价值。</p>
+        <p class="subtitle">Loop Engineering 仍是新兴概念，标注为新兴实践。</p>
+        <div class="quote" style="font-size:36px;margin-top:52px;">“find the simplest solution possible”</div>
+        <p class="source" style="color:rgba(255,250,241,.58);">Source: Anthropic, Building effective agents</p>
+        <div class="footer"><span>受控地重复，并在每轮获得新证据</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Should You Loop?</div>
+        <p class="statement small">Loop 有成本。<br>先判断它 <span class="accent">值不值得跑</span>。</p>
+        <div class="big-list">
+          <div class="item"><span class="bullet">1</span><span>任务是否重复出现？</span></div>
+          <div class="item"><span class="bullet">2</span><span>结果能否被机器或规则验收？</span></div>
+          <div class="item"><span class="bullet">3</span><span>预算、日志、复现和 review 是否到位？</span></div>
+        </div>
+        <div class="footer"><span>一次性任务：好 Prompt 更便宜 · 可验收任务更适合 Loop</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Cybernetics</div>
+        <h2>控制论视角：<br>目标、反馈、调节</h2>
+        <div class="diagram">
+          <div class="diagram-row"><div class="left">目标</div><div class="right">用户价值、业务结果、体验原则、战略方向</div></div>
+          <div class="diagram-row"><div class="left">反馈</div><div class="right">用户行为、市场变化、数据指标、销售/客服/运营信号</div></div>
+          <div class="diagram-row"><div class="left">调节</div><div class="right">改需求、改策略、改产品、改资源投入、停止错误方向</div></div>
+        </div>
+        <div class="footer"><span>PM 最终对决策负责，文档服务于决策</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark visual density-low">
+        <img class="visual-bg" src="assets/visuals/signal-system.png" alt="">
+        <div class="visual-shade"></div>
+        <div class="eyebrow">Signal Theory</div>
+        <p class="statement small">未来 PM 的壁垒：<br>构建自己的 <span class="accent">信号系统</span>。</p>
+        <div class="big-list">
+          <div class="item"><span class="bullet">1</span><span>知道哪些信号重要</span></div>
+          <div class="item"><span class="bullet">2</span><span>识别噪声来源</span></div>
+          <div class="item"><span class="bullet">3</span><span>知道如何主动验证</span></div>
+        </div>
+        <div class="footer"><span>AI 扩大接收面，PM 负责判断可信度</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-medium">
+        <div class="eyebrow">Loop Rules</div>
+        <h2>先定运行规则，<br>再让 Loop 跑起来。</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">目标</div><div class="big">完成标准<br>反指标<br>边界条件</div></div>
+          <div class="mini-card"><div class="label">运行</div><div class="big">触发<br>工具<br>状态写回</div></div>
+          <div class="mini-card"><div class="label">治理</div><div class="big">验证<br>停止<br>升级给人</div></div>
+        </div>
+        <div class="footer"><span>目标清晰、边界明确、反馈及时：管 Agent 和管团队很像</span><span class="number"></span></div>
+      </section>
+
+
+      <section class="slide density-medium">
+        <div class="eyebrow">Toolkit</div>
+        <h2>把一次分享，变成可复用资产</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">context/</div><div class="big">业务上下文</div></div>
+          <div class="mini-card"><div class="label">skills/</div><div class="big">PM 可复用能力</div></div>
+          <div class="mini-card"><div class="label">hackathon-kit/</div><div class="big">Repo + Demo + Eval</div></div>
+        </div>
+        <div class="quote" style="font-size:42px;">AI Native PM Kit：一套可复制的 PM 工作系统。</div>
+        <div class="footer"><span>Repo: rainnochen/ai_native_pm_sharing · 现场演示从 00-quickstart 开始</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-high">
+        <div class="eyebrow">Local Workbench Demo</div>
+        <h2>怎么把本地文件夹变成自己的 PM 工作台？</h2>
+        <div class="visual-split">
+          <div class="big-list" style="margin-top:0;">
+            <div class="item"><span class="bullet">1</span><span>打开本地 PM Kit 文件夹</span></div>
+            <div class="item"><span class="bullet">2</span><span>填 Project Brief、Glossary、Decision Log</span></div>
+            <div class="item"><span class="bullet">3</span><span>导入已批准的知识摘要</span></div>
+            <div class="item"><span class="bullet">4</span><span>Commit 工作台状态，再跑 Skill 和 Loop</span></div>
+          </div>
+          <div class="visual-card">
+            <img src="assets/visuals/pm-workbench.png" alt="">
+            <div class="visual-caption">把 PM 的上下文、判断、任务和反馈沉淀成一个可版本化的工作系统。</div>
+          </div>
+        </div>
+        <div class="footer"><span>入口：00-quickstart/build-your-pm-workbench.md</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark visual density-low">
+        <img class="visual-bg" src="assets/visuals/builder-transformation.png" alt="">
+        <div class="visual-shade"></div>
+        <div class="eyebrow">Builder</div>
+        <p class="statement">当 Demo 成本下降，<br>PM 要从需求传递者升级为证据构建者。</p>
+        <p class="subtitle">Builder 能力服务于产品判断和证据构建，把模糊判断压缩成可点击、可调用、可测试的证据。</p>
+        <p class="source" style="color:rgba(255,250,241,.62);font-size:24px;margin-top:28px;">“The best way to predict the future is to invent it.” — widely attributed to Alan Kay</p>
+        <div class="footer"><span>可运行原型 > 更漂亮的 PPT</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-medium">
+        <div class="eyebrow">Code Is Cheap</div>
+        <p class="statement small">当代码越来越便宜，<br><span class="accent">取舍</span> 会越来越贵。</p>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">AI 会放大</div><div class="big">功能欲望</div></div>
+          <div class="mini-card"><div class="label">PM 要守住</div><div class="big">场景边界</div></div>
+          <div class="mini-card"><div class="label">真正昂贵</div><div class="big">信任债务</div></div>
+        </div>
+        <div class="footer"><span>能做之后继续判断是否值得做；技术可行之后继续验证产品成立</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-high">
+        <div class="eyebrow">Five Levels</div>
+        <h2>AI-Native PM 五阶跃迁</h2>
+        <div class="ladder">
+          <div class="step"><div class="idx">L1</div><div class="name">User</div><div class="caption">会用</div></div>
+          <div class="step"><div class="idx">L2</div><div class="name">Operator</div><div class="caption">会派任务</div></div>
+          <div class="step"><div class="idx">L3</div><div class="name">Orchestrator</div><div class="caption">会编排</div></div>
+          <div class="step"><div class="idx">L4</div><div class="name">System Designer</div><div class="caption">会组织系统</div></div>
+          <div class="step"><div class="idx">L5</div><div class="name">Builder & Loop Owner</div><div class="caption">会创造与迭代</div></div>
+        </div>
+        <div class="footer"><span>成熟度看可复现、可验证、可进化</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark visual density-low">
+        <img class="visual-bg" src="assets/visuals/hackathon-builder.png" alt="">
+        <div class="visual-shade"></div>
+        <div class="eyebrow">Builder Training</div>
+        <p class="statement small">从一个小型 Builder 项目开始，把 PM 判断压缩成可运行证据。</p>
+        <div class="tags">
+          <span class="tag">工作流</span>
+          <span class="tag">产品判断</span>
+          <span class="tag">价值证据</span>
+          <span class="tag">AI 必要性</span>
+          <span class="tag">可体验 Demo</span>
+        </div>
+        <div class="footer"><span>承接：从 Builder 能力到可复用工作台</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide density-medium">
+        <div class="eyebrow">Hackathon Workbench</div>
+        <h2>用评审维度倒推 PM 的<br>Hackathon 工作台。</h2>
+        <div class="grid-3">
+          <div class="mini-card"><div class="label">Value</div><div class="big">真问题<br>真场景<br>真用户</div></div>
+          <div class="mini-card"><div class="label">Build</div><div class="big">Demo Spine<br>Repo<br>Eval</div></div>
+          <div class="mini-card"><div class="label">Proof</div><div class="big">Agent 必要<br>可体验<br>可复盘</div></div>
+        </div>
+        <div class="footer"><span>入口：builder-starters/ + hackathon-kit/ · Problem / Demo / Eval / Decision Log</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-low">
+        <div class="eyebrow">7-Day Challenge</div>
+        <h2>从明天开始，<br>跑一条小而真实的闭环。</h2>
+        <div class="big-list">
+          <div class="item"><span class="bullet">1</span><span>选一个高频真实任务</span></div>
+          <div class="item"><span class="bullet">2</span><span>填 Project Brief，跑一个 Skill</span></div>
+          <div class="item"><span class="bullet">3</span><span>设计 Loop，记录 Decision Log</span></div>
+        </div>
+        <div class="footer"><span>入口：00-quickstart/10-minute-start.md + build-your-pm-workbench.md</span><span class="number"></span></div>
+      </section>
+
+      <section class="slide dark density-table">
+        <div class="eyebrow">Closing</div>
+        <h2>最后，带走四个入口。</h2>
+        <div class="grid-4">
+          <div class="mini-card"><div class="label">Prompt</div><div class="big">把任务<br>说清楚</div></div>
+          <div class="mini-card"><div class="label">Harness</div><div class="big">把质量<br>稳下来</div></div>
+          <div class="mini-card"><div class="label">Loop</div><div class="big">把结果<br>跑起来</div></div>
+          <div class="mini-card"><div class="label">Starter Kit</div><div class="big">把试点<br>项目化</div></div>
+        </div>
+        <div class="footer"><span>Start: 00-quickstart/10-minute-start.md · GitHub: rainnochen/ai_native_pm_sharing</span><span class="number"></span></div>
+      </section>
+
+      <div class="progress" id="progress"></div>
+    </div>
+  </main>
+
+  <div class="controls" aria-label="presentation controls">
+    <button id="prev" type="button">←</button>
+    <span id="counter">1 / 34</span>
+    <button id="next" type="button">→</button>
+    <button id="toggleNotes" type="button">备注</button>
+    <span>Space 翻页 · F 全屏 · N 备注</span>
+  </div>
+
+  <script>
+    const stage = document.getElementById('stage');
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const progress = document.getElementById('progress');
+    const counter = document.getElementById('counter');
+    let index = 0;
+
+    function fit() {
+      const scale = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stage.style.transform = `translate(-50%, -50%) scale(${scale})`;
+    }
+
+    function drawCanvas(canvas) {
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = 1920 * dpr;
+      canvas.height = 1080 * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, 1920, 1080);
+      ctx.lineWidth = 5;
+      ctx.strokeStyle = 'rgba(255, 250, 241, .55)';
+      ctx.beginPath();
+      ctx.moveTo(120, 830);
+      for (let i = 0; i < 9; i++) {
+        const x = 120 + i * 210;
+        const y = 780 - Math.sin(i * 1.2) * 170 + (i % 3) * 24;
+        ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.fillStyle = 'rgba(227, 77, 50, .9)';
+      for (let i = 0; i < 9; i++) {
+        const x = 120 + i * 210;
+        const y = 780 - Math.sin(i * 1.2) * 170 + (i % 3) * 24;
+        ctx.beginPath();
+        ctx.arc(x, y, 12, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function update() {
+      slides.forEach((slide, i) => {
+        slide.classList.toggle('active', i === index);
+      });
+      const total = slides.length;
+      counter.textContent = `${index + 1} / ${total}`;
+      progress.style.width = `${((index + 1) / total) * 100}%`;
+      document.querySelectorAll('.number').forEach(el => {
+        el.textContent = `${String(index + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
+      });
+      const hash = `#${index + 1}`;
+      if (location.hash !== hash) history.replaceState(null, '', hash);
+    }
+
+    function go(delta) {
+      index = Math.max(0, Math.min(slides.length - 1, index + delta));
+      update();
+    }
+
+    function goTo(i) {
+      index = Math.max(0, Math.min(slides.length - 1, i));
+      update();
+    }
+
+    document.getElementById('prev').addEventListener('click', () => go(-1));
+    document.getElementById('next').addEventListener('click', () => go(1));
+    document.getElementById('toggleNotes').addEventListener('click', () => {
+      document.body.classList.toggle('show-notes');
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowRight' || event.key === 'PageDown' || event.key === ' ') {
+        event.preventDefault();
+        go(1);
+      }
+      if (event.key === 'ArrowLeft' || event.key === 'PageUp') {
+        event.preventDefault();
+        go(-1);
+      }
+      if (event.key.toLowerCase() === 'f') {
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      }
+      if (event.key.toLowerCase() === 'n') {
+        document.body.classList.toggle('show-notes');
+      }
+      if (event.key === 'Home') goTo(0);
+      if (event.key === 'End') goTo(slides.length - 1);
+    });
+
+    window.addEventListener('resize', () => {
+      fit();
+      document.querySelectorAll('.path-canvas').forEach(drawCanvas);
+    });
+
+    const hashStart = Number(location.hash.replace('#', ''));
+    if (hashStart && hashStart >= 1 && hashStart <= slides.length) index = hashStart - 1;
+
+    fit();
+    document.querySelectorAll('.path-canvas').forEach(drawCanvas);
+    update();
+  </script>
+</body>
+</html>

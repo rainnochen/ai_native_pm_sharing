@@ -34,7 +34,7 @@ Run this loop when any of the following happens:
 Collect signals from:
 
 - User's new notes and spoken intent.
-- Existing files: `ai-native-pm-sharing-draft.md`, `ai-native-pm-sharing.html`, `60min-talk-structure.md`.
+- Existing files: `ai-native-pm-sharing-final.html`, `ai-native-pm-sharing-final-script.md`.
 - Toolkit files: `README.zh-CN.md`, `skills/`, `loops/`, `hackathon-kit/`.
 - Audience type: 百度地图 PM / 业务 PM / 策略 PM / 内容 PM / 增长 PM / 商业化 PM.
 - External sources: public PM methods, AI-native organization articles, PM skills repositories.
@@ -55,8 +55,8 @@ Every loop should ask:
 ## Procedure
 
 1. **Read Current State**
-   - Inspect `ai-native-pm-sharing-draft.md`.
-   - Inspect `ai-native-pm-sharing.html`.
+   - Inspect `ai-native-pm-sharing-final-script.md`.
+   - Inspect `ai-native-pm-sharing-final.html`.
    - Inspect relevant toolkit files.
    - Check `TODO.md`.
 

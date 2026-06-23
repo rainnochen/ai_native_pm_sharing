@@ -36,9 +36,9 @@
 
 ## Phase 3: Sync Sharing Material
 
-- [x] Update ai-native-pm-sharing-draft.md chapter 11 with actual repo name and structure.
-- [x] Update ai-native-pm-sharing-draft.md slides outline for toolkit pages.
-- [x] Update ai-native-pm-sharing.html toolkit / Hackathon / 7-day challenge pages.
+- [x] Update final script with actual repo name and structure.
+- [x] Update final HTML slides outline for toolkit pages.
+- [x] Update final HTML toolkit / Hackathon / 7-day challenge pages.
 
 ## Phase 4: Validation
 
@@ -46,7 +46,7 @@
 - [x] scripts/check-links.js
 - [x] package.json scripts
 - [x] Run validation and link checks.
-- [x] Initialize local git repository and configure origin.
+- [ ] Initialize local git repository and configure origin. Current inspection still reports this directory is not a git repository.
 
 ## Phase 5: Deep Course Development Loop
 
@@ -56,7 +56,7 @@
 - [x] Add course section: PM definition shift from traditional PM to AI-native PM.
 - [x] Add course section: LLM basics for non-technical PMs.
 - [x] Add demo: ask the model to ask questions before answering.
-- [x] Add Baidu internal PM Harness section with safe placeholders for Comate / 度 Cici / 度度.
+- [x] Add PM Harness section with safe placeholders for approved AI tools.
 - [x] Research and integrate open PM Skills references into toolkit attribution and roadmap.
 
 ## Phase 6: Next Course Iterations
@@ -67,9 +67,24 @@
 - [x] Add Builder idea: when code gets cheaper, product judgment, scope discipline, trust, and verification get more expensive.
 - [x] Restructure course into three parts: AI-native PM, GitHub workbench practice, Builder/Hackathon.
 - [x] Add live demo guide for building a PM Workbench from the GitHub repository.
-- [x] Add safe placeholder flow for importing approved knowledge with internal tools such as 如流 CLI.
+- [x] Add safe placeholder flow for importing approved knowledge with approved internal tools.
 - [ ] Add a filled sample project for the Ask Before Answer prompt.
-- [ ] Add QR code / GitHub Pages URL to HTML slides.
+- [ ] Add GitHub Pages URL to public HTML slides after publishing.
 - [ ] Add visual diagram for traditional software vs AI-native software development.
-- [ ] Add speaker script for the first 10 minutes.
-- [ ] Add public-safe internal tool screenshots only after approval.
+- [ ] Keep speaker script local and publish only a public outline when needed.
+- [ ] Use synthetic screenshots or approved public screenshots only.
+
+## Phase 7: IDE / Comate-First PM Workspace
+
+- [x] Add local research source: `AI_Native_PM_Workflow_Research_Report_2026-06-23.md`.
+- [x] Add copyable workspace starter: `ai-native-pm-workspace-starter/`.
+- [x] Add IDE workbench 7-day pilot guide.
+- [x] Add Comate / Codex / Figma capability matrix.
+- [x] Add compliance routing template.
+- [x] Add runnable Starter Kit skills under `.agents/skills/`.
+- [x] Wire Starter Kit into README and Chinese README.
+- [x] Add Starter Kit checks to validation script.
+- [ ] Add filled mock sample project for the Starter Kit.
+- [ ] Add 5-10 golden cases under `ai-native-pm-workspace-starter/12_eval/golden_cases/`.
+- [ ] Fold the 7-page IDE Workbench chapter into the HTML sharing page.
+- [x] Replace legacy course-structure files with final HTML and final script.

@@ -1,0 +1,31 @@
+# Secrets and local settings
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.token
+credentials*
+secrets/
+.comate/mcp.json
+.vscode/settings.local.json
+
+# Raw or sensitive data
+03_metrics_and_data/raw/
+03_metrics_and_data/exports/
+02_user_research/raw/
+**/*pii*
+**/*user_level*
+**/*production_export*
+
+# Local build
+node_modules/
+dist/
+build/
+coverage/
+.DS_Store
+*.log
+
+# Optional local rules / memory
+.comate/memory/
+.comate/rules/local/

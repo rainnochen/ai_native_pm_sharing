@@ -6,7 +6,7 @@ When using Claude or Claude Code with this repository:
 2. Do not invent sources, metrics, or company claims.
 3. Keep PM templates copyable and practical.
 4. Ask before using sensitive data or external actions.
-5. When editing slides, keep `ai-native-pm-sharing-draft.md` and `ai-native-pm-sharing.html` aligned.
+5. When editing slides, keep `ai-native-pm-sharing-final.html` and `ai-native-pm-sharing-final-script.md` aligned.
 6. Prefer small, reviewable changes.
 
 Recommended prompt:

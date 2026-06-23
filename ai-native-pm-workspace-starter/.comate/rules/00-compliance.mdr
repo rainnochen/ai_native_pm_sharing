@@ -1,0 +1,10 @@
+---
+description: 合规与最小权限规则
+globs:
+alwaysApply: true
+---
+- 先读取 13_compliance/DATA_CLASSIFICATION.md。
+- L1–L3 不调用未批准的外部服务。
+- 禁止读取或输出密钥、Cookie、Token 和个人信息。
+- 默认只读；任何写、网络、MCP、commit、push、发布先请求批准。
+- 命中敏感信息或分类不明时停止。

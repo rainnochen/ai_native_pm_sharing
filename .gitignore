@@ -1,10 +1,16 @@
-node_modules/
 .DS_Store
-.env
-.env.*
-!.env.example
-dist/
-build/
-coverage/
-.cache/
+
+# Local-only live delivery materials
+ai-native-pm-sharing-final.html
+ai-native-pm-sharing-final-script.md
+AI_Native_PM_Workflow_Research_Report_2026-06-23.md
+本地文件，不同步github/
+
+# Live-event QR codes and personal/contact assets
+assets/qr/
+assets/images/
+
+# Local scratch exports
 *.log
+*.tmp
+*.bak

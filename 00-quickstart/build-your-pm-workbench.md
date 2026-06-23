@@ -68,11 +68,11 @@ git commit -m "docs: seed PM workbench context"
 
 If your organization has an internal knowledge system, export only approved documents into a private workbench.
 
-For example, if using an internal tool such as 如流 CLI, treat the following as pseudocode and replace it with the real approved command:
+For example, if using an approved internal knowledge tool, treat the following as pseudocode and replace it with the real approved command:
 
 ```bash
 # Pseudocode only. Replace with the real internal command and approval flow.
-<ruliu-cli> export \
+<approved-knowledge-tool> export \
   --source "<approved-space-or-folder>" \
   --format markdown \
   --output context/knowledge-inbox/
@@ -151,4 +151,3 @@ Eval
 Decision Log
 Backup Plan
 ```
-
