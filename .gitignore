@@ -11,6 +11,7 @@ assets/qr/
 assets/images/
 
 # Local scratch exports
+dist/
 *.log
 *.tmp
 *.bak
